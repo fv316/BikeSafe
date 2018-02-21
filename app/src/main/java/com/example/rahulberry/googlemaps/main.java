@@ -108,6 +108,7 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
 
         if (id == R.id.nav_map) {
         } else if (id == R.id.nav_gallery) {
+         //   fragmentManager.beginTransaction().replace(R.id.content_frame, new FirstFragment()).commit();
 
         } else if (id == R.id.nav_slideshow) {
 
