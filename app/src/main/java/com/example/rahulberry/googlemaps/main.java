@@ -1,6 +1,7 @@
 package com.example.rahulberry.googlemaps;
 
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -91,7 +92,9 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-
+            Intent i;
+            i = new Intent(com.example.rahulberry.googlemaps.main.this,SettingsActivity.class);
+            startActivity(i);
             return true;
         }
 
@@ -104,12 +107,12 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        FragmentManager fragmentManager = getFragmentManager();
-
         if (id == R.id.nav_map) {
         } else if (id == R.id.nav_gallery) {
-         //   fragmentManager.beginTransaction().replace(R.id.content_frame, new FirstFragment()).commit();
-
+            item.setCheckable(false);
+            Intent i;
+            i = new Intent(com.example.rahulberry.googlemaps.main.this,SettingsActivity.class);
+            startActivity(i);
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {

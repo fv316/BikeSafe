@@ -7,6 +7,7 @@
         <item
             android:id="@+id/nav_map"
             android:icon="@drawable/ic_menu_camera"
+
             android:title="DIS YO MAP" />
         <item
             android:id="@+id/nav_gallery"
