@@ -50,7 +50,7 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
             Old Deprecated way to get drawable -> getResources().getDrawable(R.drawable.ic_action_new_light)
             Instead, use -> getApplicationContext(), R.drawable.ic_action_new_light)
          */
-        fabIconNew.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_action_camera_light));
+        fabIconNew.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_action_new_light));
 
         final FloatingActionButton rightLowerButton = new FloatingActionButton.Builder(this)
                 .setContentView(fabIconNew)
