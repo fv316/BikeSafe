@@ -37,6 +37,7 @@ public class MapFragment extends SupportMapFragment
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     Marker mCurrLocationMarker;
+    Marker BikeMarker;
 
     //Do we need the location updates to continue in the background??
     //This pauses when activity is closed
@@ -135,6 +136,23 @@ public class MapFragment extends SupportMapFragment
 
     }
 
+    public void bikeupdate(String sms) {
+        if (BikeMarker != null) {
+            BikeMarker.remove();
+        }
+        String[] parts = sms.split(" ");
+        Double Latitude = Double.parseDouble(parts[0]);
+        Double Longitude = Double.parseDouble(parts[1]);
+
+        LatLng latLng = new LatLng(Latitude, Longitude);
+
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title("Bike Position");
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        BikeMarker = mGoogleMap.addMarker(markerOptions);
+    }
+
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
@@ -168,6 +186,27 @@ public class MapFragment extends SupportMapFragment
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION );
             }
+        }
+
+        int permissionCheck;
+        int MY_PERMISSIONS_REQUEST_READ_SMS = 123;
+        int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 123;
+        permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.READ_SMS);
+
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.READ_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.READ_SMS},
+                    MY_PERMISSIONS_REQUEST_READ_SMS);
+
+            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
+
         }
     }
 

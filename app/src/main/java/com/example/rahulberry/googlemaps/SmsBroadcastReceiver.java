@@ -14,28 +14,35 @@ import com.example.rahulberry.googlemaps.all_map_tests.MapsActivity;
  */
 
 public class SmsBroadcastReceiver extends BroadcastReceiver {
-    MapFragment mapFragment;
 
-    public static final String SMS_BUNDLE = "pdus";
+    private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
 
+    @Override
     public void onReceive(Context context, Intent intent) {
-        Bundle intentExtras = intent.getExtras();
-        if (intentExtras != null) {
-            Object[] sms = (Object[]) intentExtras.get(SMS_BUNDLE);
-            String smsMessageStr = "";
-            for (int i = 0; i < sms.length; ++i) {
-                SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms[i]);
-
-                String smsBody = smsMessage.getMessageBody().toString();
-                String address = smsMessage.getOriginatingAddress();
-
-                if (address == "+447541241808") {
-                    mapFragment = new MapFragment();
-                    smsMessageStr = smsBody;
-                    Toast.makeText(context, smsMessageStr, Toast.LENGTH_SHORT).show();
-                    MapsActivity inst = MapsActivity.instance();
-                    inst.updateList(smsMessageStr);
+        if (intent.getAction().equals(SMS_RECEIVED)) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                // get sms objects
+                Object[] pdus = (Object[]) bundle.get("pdus");
+                if (pdus.length == 0) {
+                    return;
                 }
+                // large message might be broken into many
+                SmsMessage[] messages = new SmsMessage[pdus.length];
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < pdus.length; i++) {
+                    messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
+                    sb.append(messages[i].getMessageBody());
+                }
+                String sender = messages[0].getOriginatingAddress();
+                String message = sb.toString();
+                Toast.makeText(context, sender, Toast.LENGTH_SHORT).show();
+
+                MapFragment inst = new MapFragment();
+                inst.bikeupdate(message);
+
+                // prevent any other broadcast receivers from receiving broadcast
+                // abortBroadcast();
             }
         }
     }
