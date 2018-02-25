@@ -14,6 +14,7 @@ import com.example.rahulberry.googlemaps.all_map_tests.MapsActivity;
  */
 
 public class SmsBroadcastReceiver extends BroadcastReceiver {
+    MapFragment mapFragment;
 
     public static final String SMS_BUNDLE = "pdus";
 
@@ -29,6 +30,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                 String address = smsMessage.getOriginatingAddress();
 
                 if (address == "+447541241808") {
+                    mapFragment = new MapFragment();
                     smsMessageStr = smsBody;
                     Toast.makeText(context, smsMessageStr, Toast.LENGTH_SHORT).show();
                     MapsActivity inst = MapsActivity.instance();
