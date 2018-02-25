@@ -107,19 +107,27 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_map) {
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_about) {
             item.setCheckable(false);
             Intent i;
-            i = new Intent(com.example.rahulberry.googlemaps.main.this,SettingsActivity.class);
+            i = new Intent(com.example.rahulberry.googlemaps.main.this,AboutActivity.class);
             startActivity(i);
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_account) {
+            item.setCheckable(false);
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_feedback) {
+            item.setCheckable(false);
+
+        } else if (id == R.id.nav_legal) {
+            item.setCheckable(false);
+        } else if (id == R.id.nav_terms) {
+            item.setCheckable(false);
 
         } else if (id == R.id.nav_share) {
+            item.setCheckable(false);
 
         } else if (id == R.id.nav_send) {
+            item.setCheckable(false);
 
         }
 

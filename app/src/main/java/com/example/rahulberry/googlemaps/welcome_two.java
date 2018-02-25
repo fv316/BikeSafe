@@ -38,6 +38,7 @@ public class welcome_two extends AppCompatActivity{
                 Intent i = new Intent(welcome_two
                         .this, welcome_three.class);
                 startActivity(i);
+                finish();
             }
         });
          }

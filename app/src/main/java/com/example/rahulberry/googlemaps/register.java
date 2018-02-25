@@ -21,6 +21,7 @@ public class register extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(com.example.rahulberry.googlemaps.register.this, welcome_one.class);
                 startActivity(i);
+                finish();
             }
         });
     }

@@ -24,6 +24,7 @@ public class login extends AppCompatActivity {
             public void onClick(View view) {
                 Intent i = new Intent(com.example.rahulberry.googlemaps.login.this, main.class);
                 startActivity(i);
+                finish();
             }
         });
         create_account.setOnClickListener(new View.OnClickListener() {
@@ -32,6 +33,7 @@ public class login extends AppCompatActivity {
             public void onClick(View v) {
             Intent i = new Intent(com.example.rahulberry.googlemaps.login.this,register.class);
                 startActivity(i);
+                finish();
             }
         });
         }
