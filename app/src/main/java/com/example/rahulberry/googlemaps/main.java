@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -61,8 +62,24 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
                 startActivity(facebookIntent);            }
         });
 
+        final FloatingActionButton stolenbikes = (FloatingActionButton) findViewById(R.id.stolen_bikes);
+        stolenbikes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent stravaIntent = openStrava(main.this);
+                startActivity(stravaIntent);
+            }
+        });
 
-    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final FloatingActionButton strava = (FloatingActionButton) findViewById(R.id.strava);
+        strava.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent stravaIntent = openStrava(main.this);
+                startActivity(stravaIntent);            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -83,6 +100,18 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
 
             return new Intent(Intent.ACTION_VIEW,
                     Uri.parse("https://www.facebook.com/BikeSafe-149935285698585/"));
+        }
+    }
+
+    public static Intent openStrava(Context context) {
+
+        try {
+            context.getPackageManager()
+                    .getPackageInfo("com.strava", 0);
+            return new Intent(Intent.ACTION_VIEW);
+        } catch (Exception e){
+            return new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://www.strava.com/mobile"));
         }
     }
     @Override
