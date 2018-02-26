@@ -26,7 +26,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:11.8.0'
     implementation 'com.android.support:support-vector-drawable:26.1.0'
     compile 'com.google.android.gms:play-services-location:11.8.0'
-    compile 'com.oguzdev:CircularFloatingActionMenu:1.0.2'
+    compile 'com.getbase:floatingactionbutton:1.10.1'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.android.support:support-v4:26.1.0'
     testImplementation 'junit:junit:4.12'

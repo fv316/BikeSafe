@@ -136,7 +136,7 @@ public class MapFragment extends SupportMapFragment
 
     }
 
-    public void bikeupdate(String sms) {
+   public void bikeupdate(String sms) {
         if (BikeMarker != null) {
             BikeMarker.remove();
         }

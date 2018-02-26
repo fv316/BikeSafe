@@ -40,7 +40,6 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
                 MapFragment inst = new MapFragment();
                 inst.bikeupdate(message);
-
                 // prevent any other broadcast receivers from receiving broadcast
                 // abortBroadcast();
             }
