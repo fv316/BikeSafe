@@ -2,10 +2,11 @@ package com.example.rahulberry.googlemaps;
 
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -52,8 +53,13 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         transaction.add(R.id.mapframe, mapFragment);
         transaction.commit();
 
-
-
+        final FloatingActionButton facebook = (FloatingActionButton) findViewById(R.id.facebook);
+        facebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent facebookIntent = openFacebook(main.this);
+                startActivity(facebookIntent);            }
+        });
 
 
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -66,6 +72,19 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    public static Intent openFacebook(Context context) {
+
+        try {
+            context.getPackageManager()
+                    .getPackageInfo("com.facebook.katana", 0);
+            return new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("fb://page/149935285698585"));
+        } catch (Exception e){
+
+            return new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://www.facebook.com/BikeSafe-149935285698585/"));
+        }
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {

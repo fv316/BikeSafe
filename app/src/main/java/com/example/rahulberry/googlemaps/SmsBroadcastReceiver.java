@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
 
-import com.example.rahulberry.googlemaps.all_map_tests.MapsActivity;
 
 /**
  * Created by niall on 13/02/2018.
