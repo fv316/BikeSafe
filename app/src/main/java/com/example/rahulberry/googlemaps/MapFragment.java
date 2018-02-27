@@ -3,12 +3,14 @@ package com.example.rahulberry.googlemaps;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -22,8 +24,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import java.util.Calendar;
+import com.google.android.gms.location.FusedLocationProviderClient;
+
+import static android.content.ContentValues.TAG;
 
 public class MapFragment extends SupportMapFragment
         implements OnMapReadyCallback,
@@ -38,6 +45,8 @@ public class MapFragment extends SupportMapFragment
     Location mLastLocation;
     Marker mCurrLocationMarker;
     Marker BikeMarker;
+
+    public boolean firstTime = true;
 
     //Do we need the location updates to continue in the background??
     //This pauses when activity is closed
@@ -64,29 +73,55 @@ public class MapFragment extends SupportMapFragment
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap)
-    {
-        mGoogleMap=googleMap;
-       //mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+    public void onMapReady(GoogleMap googleMap) {
+        mGoogleMap = googleMap;
+      Calendar time = Calendar.getInstance();
+            int currentTime = time.get(Calendar.HOUR_OF_DAY);
+        if (currentTime >= 18) {
+            try {
+                // Customise the styling of the base map using a JSON object defined
+                // in a raw resource file.
+                boolean success = googleMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.night_view));
 
-        //Initialize Google Play Services
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                //Location Permission already granted
-                buildGoogleApiClient();
-                mGoogleMap.setMyLocationEnabled(true);
-            } else {
-                //Request Location Permission
-                checkLocationPermission();
+                if (!success) {
+                    Log.e(TAG, "Style parsing failed.");
+                }
+            } catch (Resources.NotFoundException e) {
+                Log.e(TAG, "Can't find style. Error: ", e);
+            }
+        } else {
+            try {
+                // Customise the styling of the base map using a JSON object defined
+                // in a raw resource file.
+                boolean success = googleMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.day));
+
+                if (!success) {
+                    Log.e(TAG, "Style parsing failed.");
+                }
+            } catch (Resources.NotFoundException e) {
+                Log.e(TAG, "Can't find style. Error: ", e);
             }
         }
-        else {
-            buildGoogleApiClient();
-            mGoogleMap.setMyLocationEnabled(true);
+            //Initialize Google Play Services
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    //Location Permission already granted
+                    buildGoogleApiClient();
+                    mGoogleMap.setMyLocationEnabled(true);
+                } else {
+                    //Request Location Permission
+                    checkLocationPermission();
+                }
+            } else {
+                buildGoogleApiClient();
+                mGoogleMap.setMyLocationEnabled(true);
+            }
         }
-    }
+
 
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
@@ -116,9 +151,9 @@ public class MapFragment extends SupportMapFragment
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {}
 
+
     @Override
-    public void onLocationChanged(Location location)
-    {
+    public void onLocationChanged(Location location) {
         mLastLocation = location;
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
@@ -132,11 +167,14 @@ public class MapFragment extends SupportMapFragment
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
         //move map camera
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,11));
+        if(firstTime){
+            firstTime = false;
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,11));
+        }
 
     }
 
-   public void bikeupdate(String sms) {
+    public void bikeupdate(String sms) {
         if (BikeMarker != null) {
             BikeMarker.remove();
         }
@@ -232,7 +270,6 @@ public class MapFragment extends SupportMapFragment
                     }
 
                 } else {
-
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                     Toast.makeText(getActivity(), "permission denied", Toast.LENGTH_LONG).show();

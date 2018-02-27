@@ -66,8 +66,9 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         stolenbikes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent stravaIntent = openStrava(main.this);
-                startActivity(stravaIntent);
+                Uri uri = Uri.parse("https://stolen-bikes.co.uk/"); // missing 'http://' will cause crash
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
             }
         });
 
@@ -77,6 +78,14 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
             public void onClick(View v) {
                 Intent stravaIntent = openStrava(main.this);
                 startActivity(stravaIntent);            }
+        });
+
+        final FloatingActionButton twitter = (FloatingActionButton) findViewById(R.id.twitter);
+        facebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent facebookIntent = openTwitter(main.this);
+                startActivity(facebookIntent);            }
         });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -107,11 +116,25 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
 
         try {
             context.getPackageManager()
-                    .getPackageInfo("com.strava", 0);
+                    .getPackageInfo("com.strava.android", 0);
             return new Intent(Intent.ACTION_VIEW);
         } catch (Exception e){
             return new Intent(Intent.ACTION_VIEW,
                     Uri.parse("https://www.strava.com/mobile"));
+        }
+    }
+
+    public static Intent openTwitter(Context context) {
+
+        try {
+            context.getPackageManager()
+                    .getPackageInfo("com.twitter.android", 0);
+            return new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("twitter://user?user_id=377578445"));
+        } catch (Exception e){
+
+            return new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://www.facebook.com/BikeSafe-149935285698585/"));
         }
     }
     @Override
@@ -187,7 +210,8 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
 
         } else if (id == R.id.nav_send) {
             item.setCheckable(false);
-
+            Intent i = new Intent(com.example.rahulberry.googlemaps.main.this,ContactActivity.class);
+            startActivity(i);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
