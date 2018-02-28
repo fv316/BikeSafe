@@ -1,10 +1,7 @@
 package com.example.rahulberry.googlemaps;
 
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -23,15 +20,7 @@ import android.widget.Toast;
 
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
-import android.app.Activity;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
-import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.SupportMapFragment;
 
@@ -116,7 +105,7 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
 
         try {
             context.getPackageManager()
-                    .getPackageInfo("com.strava.android", 0);
+                    .getPackageInfo("com.strava", 0);
             return new Intent(Intent.ACTION_VIEW);
         } catch (Exception e){
             return new Intent(Intent.ACTION_VIEW,

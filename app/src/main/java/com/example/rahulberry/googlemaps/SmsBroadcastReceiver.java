@@ -3,8 +3,10 @@ package com.example.rahulberry.googlemaps;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.util.Log;
 import android.widget.Toast;
 
 

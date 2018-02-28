@@ -1,7 +1,11 @@
 package com.example.rahulberry.googlemaps;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
@@ -9,7 +13,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
+import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -37,6 +43,7 @@ public class MapFragment extends SupportMapFragment
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
+    private int MY_PERMISSIONS_REQUEST_SMS_RECEIVE = 10;
 
     GoogleMap mGoogleMap;
     SupportMapFragment mapFrag;
@@ -48,13 +55,104 @@ public class MapFragment extends SupportMapFragment
 
     public boolean firstTime = true;
 
+  /*  public void onStart() {
+        super.onStart();
+        IntentFilter filter = new IntentFilter();
+        receiver = new SmsBroadcastReceiver();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver,  filter);
+    }*/
+  /*  public void onStart() {
+        super.onStart();
+        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECEIVE_SMS}, MY_PERMISSIONS_REQUEST_SMS_RECEIVE);
+    }*/
+
+   /* public BroadcastReceiver receiver = new SmsBroadcastReceiver(){
+        public static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "test");
+            //---get the SMS message passed in---
+            Bundle bundle = intent.getExtras();
+            SmsMessage[] msgs = null;
+
+            if (bundle != null)
+            {
+                String number = "";
+                String message = "";
+                //---retrieve the SMS message received---
+                Object[] pdus = (Object[]) bundle.get("pdus");
+                msgs = new SmsMessage[pdus.length];
+                for (int i=0; i<msgs.length; i++){
+                    msgs[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
+                    number = msgs[i].getOriginatingAddress();
+
+                    message = msgs[i].getMessageBody();
+
+
+                }
+                //---display the new SMS message---
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+   /* public class SmsBroadcastReceiver extends BroadcastReceiver {
+
+        private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(getTag(), "Test");
+            if (intent.getAction().equals(SMS_RECEIVED)) {
+                Bundle bundle = intent.getExtras();
+           try {
+               if (bundle != null) {
+                   // get sms objects
+                   Object[] pdus = (Object[]) bundle.get("pdus");
+                   if (pdus.length == 0) {
+                       return;
+                   }
+                   // large message might be broken into many
+                   SmsMessage[] messages = new SmsMessage[pdus.length];
+                   StringBuilder sb = new StringBuilder();
+                   for (int i = 0; i < pdus.length; i++) {
+                       messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
+                       sb.append(messages[i].getMessageBody());
+                   }
+                   String sender = messages[0].getOriginatingAddress();
+                   String message = sb.toString();
+                   Toast.makeText(context, sender, Toast.LENGTH_SHORT).show();
+
+                   MapFragment inst = new MapFragment();
+                   inst.bikeupdate(message);
+               }
+
+               }catch(Exception e){
+
+               }
+
+                    // prevent any other broadcast receivers from receiving broadcast
+                    // abortBroadcast();
+                }
+            }
+        }*/
+
     //Do we need the location updates to continue in the background??
     //This pauses when activity is closed
-    @Override
+
+   /* @Override
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
-    }
+    }*/
+
+   @Override
+   public void onResume() {
+       super.onResume();
+       setUpMapIfNeeded();
+     //  IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
+     //  receiver = new SmsBroadcastReceiver();
+      // getActivity().registerReceiver(receiver,  filter);
+   }
 
     private void setUpMapIfNeeded() {
 
@@ -164,7 +262,7 @@ public class MapFragment extends SupportMapFragment
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
         //move map camera
         if(firstTime){
@@ -187,7 +285,7 @@ public class MapFragment extends SupportMapFragment
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("Bike Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         BikeMarker = mGoogleMap.addMarker(markerOptions);
     }
 
@@ -270,13 +368,12 @@ public class MapFragment extends SupportMapFragment
                     }
 
                 } else {
-                    // permission denied, boo! Disable the
+                    // permission denied, Disable the
                     // functionality that depends on this permission.
                     Toast.makeText(getActivity(), "permission denied", Toast.LENGTH_LONG).show();
                 }
                 return;
             }
-
             // other 'case' lines to check for other
             // permissions this app might request
         }
