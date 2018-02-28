@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.Calendar;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.squareup.otto.Subscribe;
 
 import static android.content.ContentValues.TAG;
 
@@ -45,6 +46,7 @@ public class MapFragment extends SupportMapFragment
         LocationListener {
     private int MY_PERMISSIONS_REQUEST_SMS_RECEIVE = 10;
 
+    public LatLng latLng1;
     GoogleMap mGoogleMap;
     SupportMapFragment mapFrag;
     LocationRequest mLocationRequest;
@@ -52,121 +54,59 @@ public class MapFragment extends SupportMapFragment
     Location mLastLocation;
     Marker mCurrLocationMarker;
     Marker BikeMarker;
-
-    public boolean firstTime = true;
-
-  /*  public void onStart() {
-        super.onStart();
-        IntentFilter filter = new IntentFilter();
-        receiver = new SmsBroadcastReceiver();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver,  filter);
-    }*/
-  /*  public void onStart() {
-        super.onStart();
-        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECEIVE_SMS}, MY_PERMISSIONS_REQUEST_SMS_RECEIVE);
-    }*/
-
-   /* public BroadcastReceiver receiver = new SmsBroadcastReceiver(){
-        public static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "test");
-            //---get the SMS message passed in---
-            Bundle bundle = intent.getExtras();
-            SmsMessage[] msgs = null;
-
-            if (bundle != null)
-            {
-                String number = "";
-                String message = "";
-                //---retrieve the SMS message received---
-                Object[] pdus = (Object[]) bundle.get("pdus");
-                msgs = new SmsMessage[pdus.length];
-                for (int i=0; i<msgs.length; i++){
-                    msgs[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
-                    number = msgs[i].getOriginatingAddress();
-
-                    message = msgs[i].getMessageBody();
-
-
-                }
-                //---display the new SMS message---
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
-   /* public class SmsBroadcastReceiver extends BroadcastReceiver {
-
-        private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(getTag(), "Test");
-            if (intent.getAction().equals(SMS_RECEIVED)) {
-                Bundle bundle = intent.getExtras();
-           try {
-               if (bundle != null) {
-                   // get sms objects
-                   Object[] pdus = (Object[]) bundle.get("pdus");
-                   if (pdus.length == 0) {
-                       return;
-                   }
-                   // large message might be broken into many
-                   SmsMessage[] messages = new SmsMessage[pdus.length];
-                   StringBuilder sb = new StringBuilder();
-                   for (int i = 0; i < pdus.length; i++) {
-                       messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
-                       sb.append(messages[i].getMessageBody());
-                   }
-                   String sender = messages[0].getOriginatingAddress();
-                   String message = sb.toString();
-                   Toast.makeText(context, sender, Toast.LENGTH_SHORT).show();
-
-                   MapFragment inst = new MapFragment();
-                   inst.bikeupdate(message);
-               }
-
-               }catch(Exception e){
-
-               }
-
-                    // prevent any other broadcast receivers from receiving broadcast
-                    // abortBroadcast();
-                }
-            }
-        }*/
-
-    //Do we need the location updates to continue in the background??
-    //This pauses when activity is closed
-
-   /* @Override
+    @Override
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
-    }*/
+        BusProvider.getInstance().register(this);
+    }
 
-   @Override
-   public void onResume() {
-       super.onResume();
-       setUpMapIfNeeded();
-     //  IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
-     //  receiver = new SmsBroadcastReceiver();
-      // getActivity().registerReceiver(receiver,  filter);
-   }
+    public static final String TAG1 = "BUS PLEASE WORK";
+    @Subscribe
+    public void text_received(coordinates event) {
+        Toast.makeText(getActivity(), event.bikecoordinates, Toast.LENGTH_SHORT).show();
+        String bikeloc = event.bikecoordinates;
+        //extract coordinates
+        String[] parts = bikeloc.split(" ");
+        Double Latitude = Double.parseDouble(parts[0]);
+        Double Longitude = Double.parseDouble(parts[1]);
+        LatLng latLng = new LatLng(Latitude, Longitude);
+        //need to think of an if statement that properly deletes the old marker: this didn't work;
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title("Current Position");
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        BikeMarker = mGoogleMap.addMarker(markerOptions);
+        if(BikeMarker != TempMarker) {
+            BikeMarker.remove();
+        }
+        else{
+            TempMarker = BikeMarker;
+        }
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+        //stop location updates when Activity is no longer active
+        if (mGoogleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+    }
+
+
+
+
+    public boolean firstTime = true;
+    private final String UPDATE_MAP = "com.myco.myapp.UPDATE_MAP";
+
 
     private void setUpMapIfNeeded() {
 
         if (mGoogleMap == null) {
             getMapAsync(this);
-        }
-    }
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        //stop location updates when Activity is no longer active
-        if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
     }
 
@@ -249,7 +189,6 @@ public class MapFragment extends SupportMapFragment
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {}
 
-
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
@@ -272,22 +211,6 @@ public class MapFragment extends SupportMapFragment
 
     }
 
-    public void bikeupdate(String sms) {
-        if (BikeMarker != null) {
-            BikeMarker.remove();
-        }
-        String[] parts = sms.split(" ");
-        Double Latitude = Double.parseDouble(parts[0]);
-        Double Longitude = Double.parseDouble(parts[1]);
-
-        LatLng latLng = new LatLng(Latitude, Longitude);
-
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Bike Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-        BikeMarker = mGoogleMap.addMarker(markerOptions);
-    }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private void checkLocationPermission() {

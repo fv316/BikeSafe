@@ -28,6 +28,7 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
     SupportMapFragment smapfragment;
     MapFragment mapFragment;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         smapfragment = SupportMapFragment.newInstance();
