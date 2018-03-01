@@ -58,7 +58,10 @@
             android:name=".welcome_three"
             android:theme="@style/AppTheme">
         </activity>
-
+        <activity
+            android:name=".TermsActivity"
+            android:theme="@style/AppTheme">
+        </activity>
         <receiver
             android:name=".SmsBroadcastReceiver"
             android:exported="true">
