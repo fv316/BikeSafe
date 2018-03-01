@@ -1,7 +1,11 @@
 package com.example.rahulberry.googlemaps;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
@@ -9,7 +13,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
+import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,6 +35,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.Calendar;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.squareup.otto.Subscribe;
 
 import static android.content.ContentValues.TAG;
 
@@ -37,7 +44,9 @@ public class MapFragment extends SupportMapFragment
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
+    private int MY_PERMISSIONS_REQUEST_SMS_RECEIVE = 10;
 
+    public LatLng latLng1;
     GoogleMap mGoogleMap;
     SupportMapFragment mapFrag;
     LocationRequest mLocationRequest;
@@ -45,30 +54,66 @@ public class MapFragment extends SupportMapFragment
     Location mLastLocation;
     Marker mCurrLocationMarker;
     Marker BikeMarker;
-
-    public boolean firstTime = true;
-
-    //Do we need the location updates to continue in the background??
-    //This pauses when activity is closed
+    Marker TempMarker;
     @Override
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
+        BusProvider.getInstance().register(this);
     }
+
+    public boolean local_1 = true;
+
+    public static final String TAG1 = "BUS PLEASE WORK";
+    @Subscribe
+    public void text_received(coordinates event) {
+        Toast.makeText(getActivity(), event.bikecoordinates, Toast.LENGTH_SHORT).show();
+        String bikeloc = event.bikecoordinates;
+        //extract coordinates
+        String[] parts = bikeloc.split(" ");
+        Double Latitude = Double.parseDouble(parts[0]);
+        Double Longitude = Double.parseDouble(parts[1]);
+        LatLng latLng = new LatLng(Latitude, Longitude);
+        //need to think of an if statement that properly deletes the old marker: this didn't work;
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title("Current Position");
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        BikeMarker = mGoogleMap.addMarker(markerOptions);
+        /*This don't work if(local_1){
+            TempMarker = BikeMarker;
+            local_1 = false;
+        }
+        if(BikeMarker != TempMarker) {
+            BikeMarker.remove();
+        }
+        else{
+            TempMarker = BikeMarker;
+        }*/
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+        //stop location updates when Activity is no longer active
+        if (mGoogleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+    }
+
+
+
+
+    public boolean firstTime = true;
+    private final String UPDATE_MAP = "com.myco.myapp.UPDATE_MAP";
+
 
     private void setUpMapIfNeeded() {
 
         if (mGoogleMap == null) {
             getMapAsync(this);
-        }
-    }
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        //stop location updates when Activity is no longer active
-        if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
     }
 
@@ -151,7 +196,6 @@ public class MapFragment extends SupportMapFragment
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {}
 
-
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
@@ -164,7 +208,7 @@ public class MapFragment extends SupportMapFragment
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
         //move map camera
         if(firstTime){
@@ -174,22 +218,6 @@ public class MapFragment extends SupportMapFragment
 
     }
 
-    public void bikeupdate(String sms) {
-        if (BikeMarker != null) {
-            BikeMarker.remove();
-        }
-        String[] parts = sms.split(" ");
-        Double Latitude = Double.parseDouble(parts[0]);
-        Double Longitude = Double.parseDouble(parts[1]);
-
-        LatLng latLng = new LatLng(Latitude, Longitude);
-
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Bike Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        BikeMarker = mGoogleMap.addMarker(markerOptions);
-    }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private void checkLocationPermission() {
@@ -270,13 +298,12 @@ public class MapFragment extends SupportMapFragment
                     }
 
                 } else {
-                    // permission denied, boo! Disable the
+                    // permission denied, Disable the
                     // functionality that depends on this permission.
                     Toast.makeText(getActivity(), "permission denied", Toast.LENGTH_LONG).show();
                 }
                 return;
             }
-
             // other 'case' lines to check for other
             // permissions this app might request
         }

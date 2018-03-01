@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "143183363310",
+    "firebase_url": "https://trackingapp-194914.firebaseio.com",
+    "project_id": "trackingapp-194914",
+    "storage_bucket": "trackingapp-194914.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143183363310:android:6485a3ec62851a2d",
+        "android_client_info": {
+          "package_name": "com.example.rahulberry.googlemaps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "143183363310-85clhntes94iernd5pm6mk6c6k3atpml.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rahulberry.googlemaps",
+            "certificate_hash": "3295c084c7f755234d20d043d17e83a715b781f4"
+          }
+        },
+        {
+          "client_id": "143183363310-ri0v6v9l60i8uuelor7l6ottabskg0go.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8AtNPEWfnfBNpmmwOzbQtMzyoNtvbJws"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "143183363310-ri0v6v9l60i8uuelor7l6ottabskg0go.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -3,9 +3,13 @@ package com.example.rahulberry.googlemaps;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.util.Log;
 import android.widget.Toast;
+
+import static android.content.ContentValues.TAG;
 
 
 /**
@@ -15,11 +19,13 @@ import android.widget.Toast;
 public class SmsBroadcastReceiver extends BroadcastReceiver {
 
     private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+    public static final String TAG = "BOOOOBIES";
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d(TAG, "test");
         if (intent.getAction().equals(SMS_RECEIVED)) {
-            Bundle bundle = intent.getExtras();
+           Bundle bundle = intent.getExtras();
             if (bundle != null) {
                 // get sms objects
                 Object[] pdus = (Object[]) bundle.get("pdus");
@@ -37,11 +43,12 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                 String message = sb.toString();
                 Toast.makeText(context, sender, Toast.LENGTH_SHORT).show();
 
-                MapFragment inst = new MapFragment();
-                inst.bikeupdate(message);
+                //MapFragment inst = new MapFragment();
+                //inst.bikeupdate(message);
                 // prevent any other broadcast receivers from receiving broadcast
                 // abortBroadcast();
             }
+
         }
     }
 }
