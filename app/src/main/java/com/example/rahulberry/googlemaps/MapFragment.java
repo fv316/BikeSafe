@@ -54,12 +54,15 @@ public class MapFragment extends SupportMapFragment
     Location mLastLocation;
     Marker mCurrLocationMarker;
     Marker BikeMarker;
+    Marker TempMarker;
     @Override
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
         BusProvider.getInstance().register(this);
     }
+
+    public boolean local_1 = true;
 
     public static final String TAG1 = "BUS PLEASE WORK";
     @Subscribe
@@ -77,12 +80,16 @@ public class MapFragment extends SupportMapFragment
         markerOptions.title("Current Position");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
         BikeMarker = mGoogleMap.addMarker(markerOptions);
+        /*This don't work if(local_1){
+            TempMarker = BikeMarker;
+            local_1 = false;
+        }
         if(BikeMarker != TempMarker) {
             BikeMarker.remove();
         }
         else{
             TempMarker = BikeMarker;
-        }
+        }*/
     }
 
 

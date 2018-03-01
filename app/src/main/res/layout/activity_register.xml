@@ -25,7 +25,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/confirm_password" />
+        app:layout_constraintTop_toBottomOf="@id/editTextconfirm_password" />
 
     <ImageView
         android:id="@+id/background"
@@ -41,8 +41,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
-    <AutoCompleteTextView
-        android:id="@+id/email"
+        <EditText
+        android:id="@+id/editTextEmail_two"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginEnd="16dp"
@@ -60,8 +60,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/background" />
 
-    <AutoCompleteTextView
-        android:id="@+id/username"
+        <EditText
+        android:id="@+id/editTextUsername"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginEnd="16dp"
@@ -79,10 +79,10 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/email" />
+        app:layout_constraintTop_toBottomOf="@id/editTextEmail_two" />
 
-    <AutoCompleteTextView
-        android:id="@+id/password"
+        <EditText
+        android:id="@+id/editTextPassword_two"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginEnd="16dp"
@@ -101,10 +101,10 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/username" />
+        app:layout_constraintTop_toBottomOf="@id/editTextUsername" />
 
-    <AutoCompleteTextView
-        android:id="@+id/confirm_password"
+        <EditText
+            android:id="@+id/editTextconfirm_password"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginEnd="16dp"
@@ -120,6 +120,21 @@
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/password" />
+        app:layout_constraintTop_toBottomOf="@id/editTextPassword_two" />
+
+    <ProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/background"
+        android:visibility="gone"/>
 
 </android.support.constraint.ConstraintLayout>
