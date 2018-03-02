@@ -196,14 +196,17 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
             item.setCheckable(false);
         } else if (id == R.id.nav_terms) {
             item.setCheckable(false);
+            Intent i;
+            i = new Intent(com.example.rahulberry.googlemaps.main.this,TermsActivity.class);
+            startActivity(i);
 
         } else if (id == R.id.nav_share) {
             item.setCheckable(false);
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_contact) {
             item.setCheckable(false);
-            Intent i = new Intent(com.example.rahulberry.googlemaps.main.this,ContactActivity.class);
-            startActivity(i);
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.niallrees.com"));
+            startActivity(browserIntent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
