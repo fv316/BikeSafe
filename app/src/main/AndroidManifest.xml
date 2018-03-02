@@ -68,7 +68,6 @@
             android:name=".welcome_three"
             android:theme="@style/AppTheme">
         </activity>
-<<<<<<< HEAD
         <activity
             android:name=".TermsActivity"
             android:theme="@style/AppTheme">
@@ -80,9 +79,6 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
-
-=======
->>>>>>> a13d56626af16f650a9a44125c9b4f2fa9e16029
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"

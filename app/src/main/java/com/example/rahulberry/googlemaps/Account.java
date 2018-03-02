@@ -84,8 +84,13 @@ public class Account extends AppCompatActivity{
                         .into(imageView);
             }
 
+            //The problem is here with this set text broooOOooooO - still have to fix this 
             if (user.getDisplayName() != null) {
                 displayName.setText(user.getDisplayName());
+            }
+
+            if (user.getEmail() != null) {
+                Email.setText(user.getDisplayName());
             }
 
 
