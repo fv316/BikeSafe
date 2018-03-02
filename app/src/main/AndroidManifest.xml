@@ -72,13 +72,6 @@
             android:name=".TermsActivity"
             android:theme="@style/AppTheme">
         </activity>
-        <receiver
-            android:name=".SmsBroadcastReceiver"
-            android:exported="true">
-            <intent-filter android:priority="999">
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"

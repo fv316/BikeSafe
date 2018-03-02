@@ -67,12 +67,11 @@ public class MapFragment extends SupportMapFragment
     public static final String TAG1 = "BUS PLEASE WORK";
     @Subscribe
     public void text_received(coordinates event) {
-        Toast.makeText(getActivity(), event.bikecoordinates, Toast.LENGTH_SHORT).show();
         String bikeloc = event.bikecoordinates;
         //extract coordinates
         String[] parts = bikeloc.split(" ");
-        Double Latitude = Double.parseDouble(parts[0]);
-        Double Longitude = Double.parseDouble(parts[1]);
+        Double Latitude = (Double.parseDouble(parts[0]))/1000000;
+        Double Longitude = (Double.parseDouble(parts[1]))/1000000;
         LatLng latLng = new LatLng(Latitude, Longitude);
         //need to think of an if statement that properly deletes the old marker: this didn't work;
         MarkerOptions markerOptions = new MarkerOptions();
