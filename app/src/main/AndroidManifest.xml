@@ -32,6 +32,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".UserInfo"
+            android:theme="@style/AppTheme">
+        </activity>
+
         <receiver android:name=".SmsListener" >
             <intent-filter android:priority="999" >
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
@@ -49,7 +53,6 @@
         <activity
             android:name=".register"
             android:theme="@style/AppTheme">
-
         </activity>
         <activity
             android:name=".welcome_one"
@@ -71,6 +74,8 @@
             android:theme="@style/AppTheme">
         </activity>
         <activity android:name=".AboutActivity"
+            android:theme="@style/AppTheme"/>
+        <activity android:name=".Account"
             android:theme="@style/AppTheme"/>
     </application>
 

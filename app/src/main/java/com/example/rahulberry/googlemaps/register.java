@@ -24,7 +24,7 @@ public class register extends AppCompatActivity implements View.OnClickListener{
 
     Button register;
     ProgressBar progressBar;
-    EditText editTextEmail, editTextPassword, editTextUsername, editTextconfirm;
+    EditText editTextEmail, editTextPassword, editTextConfEmail, editTextconfirm;
     private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +33,7 @@ public class register extends AppCompatActivity implements View.OnClickListener{
         register = (Button) findViewById(R.id.register_two);
 
         editTextEmail = (EditText) findViewById(R.id.editTextEmail_two);
-        editTextUsername = (EditText) findViewById(R.id.editTextUsername);
+        editTextConfEmail = (EditText) findViewById(R.id.editTextConfEmail);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword_two);
         editTextconfirm = (EditText) findViewById(R.id.editTextconfirm_password);
 
@@ -48,7 +48,7 @@ public class register extends AppCompatActivity implements View.OnClickListener{
     private void registerUser() {
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
-        String username = editTextUsername.getText().toString().trim();
+        String confirm_email = editTextConfEmail.getText().toString().trim();
         String confirm_password = editTextconfirm.getText().toString().trim();
 
 
@@ -70,9 +70,9 @@ public class register extends AppCompatActivity implements View.OnClickListener{
             return;
         }
 
-        if (username.isEmpty()) {
-            editTextUsername.setError("Username is required");
-            editTextUsername.requestFocus();
+        if(!(confirm_password).equals(password)){
+            editTextconfirm.setError("The Passwords do not match");
+            editTextconfirm.requestFocus();
             return;
         }
 
@@ -82,14 +82,14 @@ public class register extends AppCompatActivity implements View.OnClickListener{
             return;
         }
 
-        if(!(confirm_password).equals(password)){
-            editTextconfirm.setError("The Passwords do not match");
+        if(!(confirm_email).equals(email)){
+            editTextconfirm.setError("The Emails do not match");
             editTextconfirm.requestFocus();
             return;
         }
 
         if (password.length() < 6) {
-            editTextPassword.setError("Minimum lenght of password should be 6");
+            editTextPassword.setError("Minimum length of password should be 6");
             editTextPassword.requestFocus();
             return;
         }
@@ -101,7 +101,6 @@ public class register extends AppCompatActivity implements View.OnClickListener{
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressBar.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
-                    userProfile();
                     Toast.makeText(getApplicationContext(), "Created Account!", Toast.LENGTH_SHORT).show();
                     finish();
                     startActivity(new Intent(register.this, welcome_one.class));
@@ -118,28 +117,6 @@ public class register extends AppCompatActivity implements View.OnClickListener{
             }
         });
 
-    }
-
-
-    //Set UserDisplay Name
-    private void userProfile() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        if(user!= null) {
-            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                    .setDisplayName(editTextUsername.getText().toString().trim())
-                    //.setPhotoUri(Uri.parse("https://example.com/jane-q-user/profile.jpg")) // here you can set image link also.
-                    .build();
-
-            user.updateProfile(profileUpdates)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Log.d("TESTING", "User profile updated.");
-                            }
-                        }
-                    });
-        }
     }
 
     @Override

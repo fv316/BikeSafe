@@ -61,14 +61,14 @@
         app:layout_constraintTop_toBottomOf="@id/background" />
 
         <EditText
-        android:id="@+id/editTextUsername"
+        android:id="@+id/editTextConfEmail"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:background="@drawable/rectangle_two"
-        android:drawableLeft="@drawable/ic_person"
-        android:hint="Username"
+        android:drawableLeft="@drawable/ic_"
+        android:hint="Confirm Email"
         android:paddingLeft="7dp"
         android:paddingRight="7dp"
         android:paddingStart="10dp"
@@ -101,7 +101,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editTextUsername" />
+        app:layout_constraintTop_toBottomOf="@id/editTextConfEmail" />
 
         <EditText
             android:id="@+id/editTextconfirm_password"
