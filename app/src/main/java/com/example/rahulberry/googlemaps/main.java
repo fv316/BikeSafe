@@ -186,7 +186,9 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
             startActivity(i);
         } else if (id == R.id.nav_account) {
             item.setCheckable(false);
-
+            Intent i;
+            i = new Intent(com.example.rahulberry.googlemaps.main.this,Account.class);
+            startActivity(i);
         } else if (id == R.id.nav_feedback) {
             item.setCheckable(false);
 

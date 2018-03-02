@@ -90,7 +90,7 @@ public class login extends AppCompatActivity implements View.OnClickListener{
         });
     }
 
-    //THIS KEEPS THE USER LOGGED IN 
+    //THIS KEEPS THE USER LOGGED IN
     /*@Override
     protected void onStart() {
         super.onStart();

@@ -37,7 +37,7 @@ public class welcome_three extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(welcome_three
-                       .this, main.class);
+                       .this, UserInfo.class);
                 startActivity(i);
                 finish();
         }
