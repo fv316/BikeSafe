@@ -44,7 +44,6 @@ public class MapFragment extends SupportMapFragment
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
-    private int MY_PERMISSIONS_REQUEST_SMS_RECEIVE = 10;
 
     public LatLng latLng1;
     GoogleMap mGoogleMap;
@@ -62,35 +61,6 @@ public class MapFragment extends SupportMapFragment
         BusProvider.getInstance().register(this);
     }
 
-    public boolean local_1 = true;
-
-    public static final String TAG1 = "BUS PLEASE WORK";
-    @Subscribe
-    public void text_received(coordinates event) {
-        String bikeloc = event.bikecoordinates;
-        //extract coordinates
-        String[] parts = bikeloc.split(" ");
-        Double Latitude = (Double.parseDouble(parts[0]))/1000000;
-        Double Longitude = (Double.parseDouble(parts[1]))/1000000;
-        LatLng latLng = new LatLng(Latitude, Longitude);
-        //need to think of an if statement that properly deletes the old marker: this didn't work;
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-        BikeMarker = mGoogleMap.addMarker(markerOptions);
-        /*This don't work if(local_1){
-            TempMarker = BikeMarker;
-            local_1 = false;
-        }
-        if(BikeMarker != TempMarker) {
-            BikeMarker.remove();
-        }
-        else{
-            TempMarker = BikeMarker;
-        }*/
-    }
-
 
     @Override
     public void onPause() {
@@ -106,6 +76,7 @@ public class MapFragment extends SupportMapFragment
 
 
     public boolean firstTime = true;
+    public boolean firstSMS = true;
     private final String UPDATE_MAP = "com.myco.myapp.UPDATE_MAP";
 
 
@@ -150,15 +121,18 @@ public class MapFragment extends SupportMapFragment
         }
             //Initialize Google Play Services
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ContextCompat.checkSelfPermission(getActivity(),
+                if ((ContextCompat.checkSelfPermission(getActivity(),
                         Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
+                        == PackageManager.PERMISSION_GRANTED)&&(ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.SEND_SMS)
+                        == PackageManager.PERMISSION_GRANTED)) {
                     //Location Permission already granted
                     buildGoogleApiClient();
                     mGoogleMap.setMyLocationEnabled(true);
                 } else {
                     //Request Location Permission
                     checkLocationPermission();
+                    checkSMSPermission();
                 }
             } else {
                 buildGoogleApiClient();
@@ -166,6 +140,34 @@ public class MapFragment extends SupportMapFragment
             }
         }
 
+    @Subscribe
+    public void text_received(coordinates event) {
+
+        String bikeloc = event.bikecoordinates;
+        //extract coordinates
+        String[] parts = bikeloc.split(" ");
+        Double Latitude = (Double.parseDouble(parts[0]))/1000000;
+        Double Longitude = (Double.parseDouble(parts[1]))/1000000;
+        LatLng latLng = new LatLng(Latitude, Longitude);
+        //need to think of an if statement that properly deletes the old marker: this didn't work;
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title("Your Bike");
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        BikeMarker = mGoogleMap.addMarker(markerOptions);
+        if(firstSMS){
+            TempMarker = BikeMarker;
+            BikeMarker = TempMarker;
+            firstSMS = false;
+        }
+        if(BikeMarker != TempMarker) {
+            TempMarker.remove();
+        }
+        else{
+            TempMarker = BikeMarker;
+
+        }
+    }
 
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
@@ -214,7 +216,6 @@ public class MapFragment extends SupportMapFragment
             firstTime = false;
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,11));
         }
-
     }
 
 
@@ -252,26 +253,48 @@ public class MapFragment extends SupportMapFragment
                         MY_PERMISSIONS_REQUEST_LOCATION );
             }
         }
+    }
 
-        int permissionCheck;
-        int MY_PERMISSIONS_REQUEST_READ_SMS = 123;
-        int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 123;
-        permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.READ_SMS);
-
-        // Here, thisActivity is the current activity
+    public static final int REQUEST_SEND_SMS = 23;
+    private void checkSMSPermission(){
         if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.READ_SMS)
+                Manifest.permission.SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.READ_SMS},
-                    MY_PERMISSIONS_REQUEST_READ_SMS);
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.SEND_SMS)) {
 
-            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-            // app-defined int constant. The callback method gets the
-            // result of the request.
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("SMS Permission Needed")
+                        .setMessage("This app needs SMS permissions")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(getActivity(),
+                                        new String[]{Manifest.permission.SEND_SMS},
+                                        REQUEST_SEND_SMS );
+                            }
+                        })
+                        .create()
+                        .show();
 
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.SEND_SMS},
+                        REQUEST_SEND_SMS);
+
+                // REQUEST_SEND_SMS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
         }
     }
 
@@ -303,6 +326,27 @@ public class MapFragment extends SupportMapFragment
                 }
                 return;
             }
+            case REQUEST_SEND_SMS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // location-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(getActivity(),
+                            Manifest.permission.SEND_SMS)
+                            == PackageManager.PERMISSION_GRANTED) {
+                    }
+
+                } else {
+                    // permission denied, Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(getActivity(), "permission denied", Toast.LENGTH_LONG).show();
+                }
+                return;
+
+            }
+
             // other 'case' lines to check for other
             // permissions this app might request
         }

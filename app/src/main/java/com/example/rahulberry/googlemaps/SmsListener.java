@@ -24,6 +24,7 @@ public class SmsListener extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        String string = "boob";
         Log.i(TAG, "in Receiver. intent.getAction():" + intent.getAction());
         if (intent.getAction()
                 .equals("android.provider.Telephony.SMS_RECEIVED")) {
@@ -35,7 +36,6 @@ public class SmsListener extends BroadcastReceiver {
                 if (pdus.length == 0) {
                     return;
                 }
-                // large message might be broken into many
                 try {
                     SmsMessage[] messages = new SmsMessage[pdus.length];
                     StringBuilder sb = new StringBuilder();
@@ -49,7 +49,6 @@ public class SmsListener extends BroadcastReceiver {
                 } catch (Exception e) {
                      Log.d("Exception caught",e.getMessage());
                 }
-                abortBroadcast();
             }
 
         }

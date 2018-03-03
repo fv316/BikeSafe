@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="429dp"
-        android:layout_height="200dp"
+        android:layout_height="247dp"
         android:scaleType="centerCrop"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -20,7 +20,7 @@
     <TextView
         android:id="@+id/textView3"
         android:layout_width="384dp"
-        android:layout_height="56dp"
+        android:layout_height="35dp"
         android:text="Tap on the image to change your profile picture"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -28,7 +28,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.533" />
+        app:layout_constraintVertical_bias="0.603" />
 
     <ImageView
         android:id="@+id/profilepicture"
@@ -83,7 +83,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.958" />
 
     <TextView
         android:id="@+id/textViewVerified"
@@ -116,6 +116,6 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.883" />
+        app:layout_constraintVertical_bias="0.92" />
 
 </android.support.constraint.ConstraintLayout>

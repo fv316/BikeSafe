@@ -30,6 +30,10 @@
     <style name="hProgressBar">
         <item name="colorAccent">@color/light_blue</item>
     </style>
+    <style name="TextAppearance44">
+        <item name="android:textColor">#FF0000</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>
 
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -12,6 +13,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.SmsManager;
+import android.text.SpannableString;
+import android.text.style.TextAppearanceSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -102,8 +106,12 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         Menu menu = navigationView.getMenu();
-
         final MenuItem edit = menu.findItem(R.id.nav_item1);
+        final MenuItem logout = menu.findItem(R.id.logout);
+        SpannableString s = new SpannableString(logout.getTitle());
+        s.setSpan(new TextAppearanceSpan(this, R.style.TextAppearance44), 0, s.length(), 0);
+        logout.setTitle(s);
+        navigationView.setNavigationItemSelectedListener(this);
 
         navigationView.getMenu().findItem(R.id.nav_item1)
                 .setActionView(new Switch(this));
@@ -115,13 +123,30 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
                 if (user_mode.isChecked()) {
                      edit.setTitle("Secure");
+                     sendSMS("5555", "change mode");
                 } else {
                      edit.setTitle("Rest");
+                    sendSMS("5555", "change mode");
+
                 }
             }
 
         });
     }
+
+    public void sendSMS(String phoneNo, String msg) {
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(phoneNo, null, msg, null, null);
+            Toast.makeText(getApplicationContext(), "Message Sent",
+                    Toast.LENGTH_LONG).show();
+        } catch (Exception ex) {
+            Toast.makeText(getApplicationContext(),ex.getMessage().toString(),
+                    Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
+
 
     public static Intent openFacebook(Context context) {
 
@@ -214,15 +239,19 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         if (id == R.id.nav_about) {
             item.setCheckable(false);
             Intent i;
-            i = new Intent(com.example.rahulberry.googlemaps.main.this,AboutActivity.class);
+            i = new Intent(this,AboutActivity.class);
             startActivity(i);
         } else if (id == R.id.nav_account) {
             item.setCheckable(false);
             Intent i;
-            i = new Intent(com.example.rahulberry.googlemaps.main.this,Account.class);
+            i = new Intent(this,Account.class);
             startActivity(i);
         } else if (id == R.id.nav_feedback) {
             item.setCheckable(false);
+        }else if(id == R.id.nav_settings){
+            item.setCheckable(false);
+            Intent i = new Intent(this, SettingsActivity.class);
+            startActivity(i);
         } else if (id == R.id.nav_share) {
             item.setCheckable(false);
         } else if (id == R.id.nav_contact) {
