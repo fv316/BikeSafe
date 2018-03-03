@@ -3,7 +3,6 @@ package com.example.rahulberry.googlemaps;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-
 public class AboutActivity extends AppCompatActivity {
 
     @Override

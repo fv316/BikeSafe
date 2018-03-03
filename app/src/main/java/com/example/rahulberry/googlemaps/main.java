@@ -15,7 +15,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 
@@ -83,11 +86,11 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         });
 
         final FloatingActionButton twitter = (FloatingActionButton) findViewById(R.id.twitter);
-        facebook.setOnClickListener(new View.OnClickListener() {
+        twitter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent facebookIntent = openTwitter(main.this);
-                startActivity(facebookIntent);            }
+                Intent twitterIntent = openTwitter(main.this);
+                startActivity(twitterIntent);            }
         });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -96,8 +99,28 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        Menu menu = navigationView.getMenu();
+
+        final MenuItem edit = menu.findItem(R.id.nav_item1);
+
+        navigationView.getMenu().findItem(R.id.nav_item1)
+                .setActionView(new Switch(this));
+
+        final Switch user_mode = (Switch) navigationView.getMenu().findItem(R.id.nav_item1).getActionView();
+        user_mode.setChecked(true);
+        user_mode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
+                if (user_mode.isChecked()) {
+                     edit.setTitle("Secure");
+                } else {
+                     edit.setTitle("Rest");
+                }
+            }
+
+        });
     }
 
     public static Intent openFacebook(Context context) {
@@ -127,14 +150,12 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
     }
 
     public static Intent openTwitter(Context context) {
-
         try {
             context.getPackageManager()
                     .getPackageInfo("com.twitter.android", 0);
             return new Intent(Intent.ACTION_VIEW,
                     Uri.parse("twitter://user?user_id=377578445"));
         } catch (Exception e){
-
             return new Intent(Intent.ACTION_VIEW,
                     Uri.parse("https://www.facebook.com/BikeSafe-149935285698585/"));
         }
@@ -175,9 +196,9 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_terms) {
             Intent i;
-            i = new Intent(com.example.rahulberry.googlemaps.main.this,SettingsActivity.class);
+            i = new Intent(com.example.rahulberry.googlemaps.main.this,TermsActivity.class);
             startActivity(i);
             return true;
         }
@@ -190,7 +211,6 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         if (id == R.id.nav_about) {
             item.setCheckable(false);
             Intent i;
@@ -203,13 +223,6 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
             startActivity(i);
         } else if (id == R.id.nav_feedback) {
             item.setCheckable(false);
-        } else if (id == R.id.nav_legal) {
-            item.setCheckable(false);
-        } else if (id == R.id.nav_terms) {
-            item.setCheckable(false);
-            Intent i;
-            i = new Intent(com.example.rahulberry.googlemaps.main.this,TermsActivity.class);
-            startActivity(i);
         } else if (id == R.id.nav_share) {
             item.setCheckable(false);
         } else if (id == R.id.nav_contact) {

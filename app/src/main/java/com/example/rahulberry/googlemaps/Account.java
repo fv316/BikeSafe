@@ -2,6 +2,7 @@ package com.example.rahulberry.googlemaps;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -47,13 +48,14 @@ public class Account extends AppCompatActivity{
     EditText displayName2, Email3;
     Button start;
     Uri uriProfileImage;
-    ProgressBar progressBar;
+    ProgressBar progressBar2;
 
     String profileImageUrl;
 
     FirebaseAuth mAuth;
 
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
         mAuth = FirebaseAuth.getInstance();
@@ -64,7 +66,7 @@ public class Account extends AppCompatActivity{
         displayName2 = (EditText) findViewById(R.id.editTextDisplayName2);
         Email3 = (EditText) findViewById(R.id.editTextEmail_three);
         imageView = (ImageView) findViewById(R.id.profilepicture);
-        progressBar = (ProgressBar) findViewById(R.id.progressbar);
+        progressBar2 = (ProgressBar) findViewById(R.id.progressBar2);
         textView = (TextView) findViewById(R.id.textViewVerified);
         start = (Button) findViewById(R.id.enter_main);
 
@@ -117,12 +119,12 @@ public class Account extends AppCompatActivity{
         final FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
             if (user.getPhotoUrl() != null) {
+                progressBar2.setVisibility(View.GONE);
                 Glide.with(this)
                         .load(user.getPhotoUrl().toString())
                         .into(imageView);
             }
 
-            //The problem is here with this set text broooOOooooO - still have to fix this
             if (user.getDisplayName() != null) {
                displayName2.setText(user.getDisplayName());
             }
@@ -174,19 +176,19 @@ public class Account extends AppCompatActivity{
                 FirebaseStorage.getInstance().getReference("profilepics/" + System.currentTimeMillis() + ".jpg");
 
         if (uriProfileImage != null) {
-            progressBar.setVisibility(View.VISIBLE);
+            progressBar2.setVisibility(View.VISIBLE);
             profileImageRef.putFile(uriProfileImage)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressBar.setVisibility(View.GONE);
+                            progressBar2.setVisibility(View.GONE);
                             profileImageUrl = taskSnapshot.getDownloadUrl().toString();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            progressBar.setVisibility(View.GONE);
+                            progressBar2.setVisibility(View.GONE);
                             Toast.makeText(com.example.rahulberry.googlemaps.Account.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });

@@ -7,6 +7,7 @@ import android.nfc.Tag;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.rahulberry.googlemaps.all_map_tests.MainActivity;
@@ -20,8 +21,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class SmsListener extends BroadcastReceiver {
     public static final String TAG = "OnReceive Called";
-    public static final String TAG1 = "Coordinates";
-
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -46,22 +45,10 @@ public class SmsListener extends BroadcastReceiver {
                         String sender = messages[0].getOriginatingAddress();
                         String message = sb.toString();
                         BusProvider.getInstance().post(new coordinates(message));
-                       // Toast.makeText(context, sender, Toast.LENGTH_SHORT).show();
-                        //extract coordinates
-                       /* String[] parts = message.split(" ");
-                        Double Latitude = Double.parseDouble(parts[0]);
-                        Double Longitude = Double.parseDouble(parts[1]);
-                        LatLng latLng = new LatLng(Latitude, Longitude);*/
                     }
                 } catch (Exception e) {
-                    // Log.d("Exception caught",e.getMessage());
+                     Log.d("Exception caught",e.getMessage());
                 }
-
-
-
-                //MapFragment inst = new MapFragment();
-                //inst.bikeupdate(message);
-                // prevent any other broadcast receivers from receiving broadcast
                 abortBroadcast();
             }
 
