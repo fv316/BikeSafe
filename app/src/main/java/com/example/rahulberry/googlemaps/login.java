@@ -91,14 +91,14 @@ public class login extends AppCompatActivity implements View.OnClickListener{
     }
 
     //THIS KEEPS THE USER LOGGED IN
-    /*@Override
+   @Override
     protected void onStart() {
         super.onStart();
         if (mAuth.getCurrentUser() != null) {
             startActivity(new Intent(this, main.class));
             finish();
         }
-    }*/
+    }
 
     @Override
     public void onClick(View view) {

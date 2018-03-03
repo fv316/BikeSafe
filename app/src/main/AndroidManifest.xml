@@ -21,8 +21,10 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true">
-
+        android:supportsRtl="true"
+        android:hardwareAccelerated="false"
+        android:largeHeap="true">
+        <!-- you need to see what the two entries above do: they should fix the bitmapping issue-->
         <!-- the activity below sets the launch view to the class login -->
         <activity
             android:name=".login"

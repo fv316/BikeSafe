@@ -44,7 +44,7 @@ public class UserInfo extends AppCompatActivity {
     EditText editText;
     Button start;
     Uri uriProfileImage;
-    ProgressBar progressBar;
+    ProgressBar progressBar1;
 
     String profileImageUrl;
 
@@ -61,7 +61,7 @@ public class UserInfo extends AppCompatActivity {
 
         editText = (EditText) findViewById(R.id.editTextDisplayName);
         imageView = (ImageView) findViewById(R.id.profilepicture);
-        progressBar = (ProgressBar) findViewById(R.id.progressbar);
+        progressBar1 = (ProgressBar) findViewById(R.id.progressBar1);
         textView = (TextView) findViewById(R.id.textViewVerified);
         start = (Button) findViewById(R.id.enter_main);
 
@@ -72,7 +72,13 @@ public class UserInfo extends AppCompatActivity {
             }
         });
 
-
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(UserInfo.this, main.class);
+                startActivity(i);
+            }
+        });
 
         loadUserInformation();
 
@@ -80,7 +86,6 @@ public class UserInfo extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 saveUserInformation();
-
             }
         });
     }
@@ -103,7 +108,7 @@ public class UserInfo extends AppCompatActivity {
                 Glide.with(this)
                         .load(user.getPhotoUrl().toString())
                         .into(imageView);
-             }
+            }
 
             if (user.getDisplayName() != null) {
                 editText.setText(user.getDisplayName());
@@ -112,16 +117,7 @@ public class UserInfo extends AppCompatActivity {
 
             if (user.isEmailVerified()) {
                 textView.setText("Email Verified");
-                start.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent i = new Intent(UserInfo.this, main.class);
-                        startActivity(i);
-                    }
-                });
-
             } else {
-                start.setVisibility(View.GONE);
                 textView.setText("Email Not Verified (Click to Verify)");
                 textView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -138,10 +134,7 @@ public class UserInfo extends AppCompatActivity {
         }
     }
 
-
     private void saveUserInformation() {
-
-
         String displayName = editText.getText().toString();
 
         if (displayName.isEmpty()) {
@@ -193,49 +186,24 @@ public class UserInfo extends AppCompatActivity {
                 FirebaseStorage.getInstance().getReference("profilepics/" + System.currentTimeMillis() + ".jpg");
 
         if (uriProfileImage != null) {
-            progressBar.setVisibility(View.VISIBLE);
+            progressBar1.setVisibility(View.VISIBLE);
             profileImageRef.putFile(uriProfileImage)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressBar.setVisibility(View.GONE);
+                            progressBar1.setVisibility(View.GONE);
                             profileImageUrl = taskSnapshot.getDownloadUrl().toString();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            progressBar.setVisibility(View.GONE);
+                            progressBar1.setVisibility(View.GONE);
                             Toast.makeText(com.example.rahulberry.googlemaps.UserInfo.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
         }
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.logout, menu);
-
-        return true;
-    }
-
-  /*  @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.menuLogout:
-
-                FirebaseAuth.getInstance().signOut();
-                finish();
-                startActivity(new Intent(this, MainActivity.class));
-
-                break;
-        }
-
-        return true;
-    }*/
 
     private void showImageChooser() {
         Intent intent = new Intent();

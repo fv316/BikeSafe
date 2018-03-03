@@ -28,6 +28,8 @@
             android:id="@+id/nav_terms"
             android:icon="@drawable/ic_terms"
             android:title="Terms and Conditions" />
+
+
     </group>
 
     <item android:title="Communicate">
@@ -42,5 +44,18 @@
                 android:title="Contact Us" />
         </menu>
     </item>
+
+      <item android:title="test">
+          <menu>
+              <SwitchItem
+                  android:id="@+id/mode_switch"
+                  />
+              <item
+                  android:id="@+id/logout"
+                  android:title="Log out"
+                  />
+          </menu>
+
+      </item>
 
 </menu>

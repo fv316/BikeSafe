@@ -23,14 +23,26 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 
 
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class main extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     SupportMapFragment smapfragment;
     MapFragment mapFragment;
+    FirebaseAuth mAuth;
 
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (mAuth.getCurrentUser() == null) {
+            finish();
+            startActivity(new Intent(this, login.class));
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mAuth = FirebaseAuth.getInstance();
         smapfragment = SupportMapFragment.newInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
@@ -191,7 +203,6 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
             startActivity(i);
         } else if (id == R.id.nav_feedback) {
             item.setCheckable(false);
-
         } else if (id == R.id.nav_legal) {
             item.setCheckable(false);
         } else if (id == R.id.nav_terms) {
@@ -199,16 +210,18 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
             Intent i;
             i = new Intent(com.example.rahulberry.googlemaps.main.this,TermsActivity.class);
             startActivity(i);
-
         } else if (id == R.id.nav_share) {
             item.setCheckable(false);
-
         } else if (id == R.id.nav_contact) {
             item.setCheckable(false);
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.niallrees.com"));
             startActivity(browserIntent);
+        }else if(id == R.id.logout){
+            item.setCheckable(false);
+            FirebaseAuth.getInstance().signOut();
+            finish();
+            startActivity(new Intent(this, login.class));
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

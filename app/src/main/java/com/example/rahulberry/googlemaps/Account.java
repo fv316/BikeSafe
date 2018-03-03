@@ -32,6 +32,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.IOException;
+
 /**
  * Created by rahulberry on 01/03/2018.
  */
@@ -42,8 +44,7 @@ public class Account extends AppCompatActivity{
 
     TextView textView;
     ImageView imageView;
-    EditText displayName;
-    EditText Email;
+    EditText displayName2, Email3;
     Button start;
     Uri uriProfileImage;
     ProgressBar progressBar;
@@ -60,7 +61,8 @@ public class Account extends AppCompatActivity{
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        displayName = (EditText) findViewById(R.id.editTextDisplayName);
+        displayName2 = (EditText) findViewById(R.id.editTextDisplayName2);
+        Email3 = (EditText) findViewById(R.id.editTextEmail_three);
         imageView = (ImageView) findViewById(R.id.profilepicture);
         progressBar = (ProgressBar) findViewById(R.id.progressbar);
         textView = (TextView) findViewById(R.id.textViewVerified);
@@ -73,6 +75,42 @@ public class Account extends AppCompatActivity{
             }
         });
         loadUserInformation();
+
+        findViewById(R.id.buttonSave).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveUserInformation();
+            }
+        });
+    }
+
+    private void saveUserInformation() {
+        String displayName = displayName2.getText().toString();
+
+        if (displayName.isEmpty()) {
+            displayName2.setError("Name required");
+            displayName2.requestFocus();
+            return;
+        }
+
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if (user != null && profileImageUrl != null) {
+            UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(displayName)
+                    .setPhotoUri(Uri.parse(profileImageUrl))
+                    .build();
+
+            user.updateProfile(profile)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(com.example.rahulberry.googlemaps.Account.this, "Profile Updated", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        }
     }
 
     private void loadUserInformation() {
@@ -84,13 +122,13 @@ public class Account extends AppCompatActivity{
                         .into(imageView);
             }
 
-            //The problem is here with this set text broooOOooooO - still have to fix this 
+            //The problem is here with this set text broooOOooooO - still have to fix this
             if (user.getDisplayName() != null) {
-                displayName.setText(user.getDisplayName());
+               displayName2.setText(user.getDisplayName());
             }
 
-            if (user.getEmail() != null) {
-                Email.setText(user.getDisplayName());
+           if (user.getEmail() != null) {
+                Email3.setText(user.getEmail());
             }
 
 
@@ -110,6 +148,48 @@ public class Account extends AppCompatActivity{
                     }
                 });
             }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CHOOSE_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            uriProfileImage = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uriProfileImage);
+                imageView.setImageBitmap(bitmap);
+
+                uploadImageToFirebaseStorage();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void uploadImageToFirebaseStorage() {
+        StorageReference profileImageRef =
+                FirebaseStorage.getInstance().getReference("profilepics/" + System.currentTimeMillis() + ".jpg");
+
+        if (uriProfileImage != null) {
+            progressBar.setVisibility(View.VISIBLE);
+            profileImageRef.putFile(uriProfileImage)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressBar.setVisibility(View.GONE);
+                            profileImageUrl = taskSnapshot.getDownloadUrl().toString();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressBar.setVisibility(View.GONE);
+                            Toast.makeText(com.example.rahulberry.googlemaps.Account.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
     }
 
