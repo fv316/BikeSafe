@@ -73,9 +73,9 @@ public class MapFragment extends SupportMapFragment
         super.onPause();
         BusProvider.getInstance().unregister(this);
         //stop location updates when Activity is no longer active
-        if (mGoogleApiClient != null) {
+        /*if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
+        }*/
     }
 
     public boolean firstTime = true;
