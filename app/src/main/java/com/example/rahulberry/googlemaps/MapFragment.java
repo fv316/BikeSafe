@@ -1,6 +1,11 @@
 package com.example.rahulberry.googlemaps;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -37,6 +43,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.Random;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.squareup.otto.Subscribe;
 
@@ -50,6 +58,8 @@ public class MapFragment extends SupportMapFragment
 
     public LatLng bike;
     public LatLng user;
+
+    NotificationHelper helper;
 
     public LatLng latLng1;
     GoogleMap mGoogleMap;
@@ -65,8 +75,9 @@ public class MapFragment extends SupportMapFragment
         super.onResume();
         setUpMapIfNeeded();
         BusProvider.getInstance().register(this);
-    }
 
+        helper = new NotificationHelper(getActivity());
+    }
 
     @Override
     public void onPause() {
@@ -171,7 +182,9 @@ public class MapFragment extends SupportMapFragment
             TempMarker = BikeMarker;
 
         }
-        distance_check();
+        if((bike != null) && (user != null)) {
+            distance_check();
+        }
     }
 
     public void distance_check(){
@@ -199,9 +212,14 @@ public class MapFragment extends SupportMapFragment
         double meters = valueResult * 1000;
 
         if(meters > 10){
-            //notification shit
+            sendLockReminder();
         }
+        return;
+    }
 
+    public void sendLockReminder() {
+        NotificationCompat.Builder builder = helper.getnotificationChannelNotification("BikeSafe","Did you forget to lock your bike?");
+        helper.getManager().notify(new Random().nextInt(),builder.build());
         return;
     }
 
@@ -252,6 +270,9 @@ public class MapFragment extends SupportMapFragment
         if(firstTime){
             firstTime = false;
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,11));
+        }
+        if((bike != null) && (user != null)) {
+            distance_check();
         }
     }
 
