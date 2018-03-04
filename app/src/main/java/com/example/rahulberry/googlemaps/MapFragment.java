@@ -12,6 +12,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -33,6 +34,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.squareup.otto.Subscribe;
@@ -44,6 +47,9 @@ public class MapFragment extends SupportMapFragment
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
+
+    public LatLng bike;
+    public LatLng user;
 
     public LatLng latLng1;
     GoogleMap mGoogleMap;
@@ -71,9 +77,6 @@ public class MapFragment extends SupportMapFragment
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
     }
-
-
-
 
     public boolean firstTime = true;
     public boolean firstSMS = true;
@@ -149,6 +152,7 @@ public class MapFragment extends SupportMapFragment
         Double Latitude = (Double.parseDouble(parts[0]))/1000000;
         Double Longitude = (Double.parseDouble(parts[1]))/1000000;
         LatLng latLng = new LatLng(Latitude, Longitude);
+        bike = latLng;
         //need to think of an if statement that properly deletes the old marker: this didn't work;
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
@@ -167,6 +171,38 @@ public class MapFragment extends SupportMapFragment
             TempMarker = BikeMarker;
 
         }
+        distance_check();
+    }
+
+    public void distance_check(){
+        int Radius = 6371;// radius of earth in Km
+        double lat1 = bike.latitude;
+        double lat2 = user.latitude;
+        double lon1 = bike.longitude;
+        double lon2 = user.longitude;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult = Radius * c;
+        double km = valueResult / 1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        int kmInDec = Integer.valueOf(newFormat.format(km));
+        double meter = valueResult % 1000;
+        int meterInDec = Integer.valueOf(newFormat.format(meter));
+        Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
+                + " Meter   " + meterInDec);
+
+        double meters = valueResult * 1000;
+
+        if(meters > 10){
+            //notification shit
+        }
+
+        return;
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -206,11 +242,12 @@ public class MapFragment extends SupportMapFragment
         // ADD GEOCODER AND TRY-CATCH
         //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
+        user = latLng;
+        //MarkerOptions markerOptions = new MarkerOptions();
+        //markerOptions.position(latLng);
+        //markerOptions.title("Current Position");
+        //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        //mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
         //move map camera
         if(firstTime){
             firstTime = false;
