@@ -1,10 +1,16 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
     <SwitchPreference
         android:defaultValue="true"
-        android:key="example_switch"
-        android:summary="@string/pref_description_social_recommendations"
-        android:title="@string/pref_title_social_recommendations" />
+        android:key="map_view_switch"
+        android:summary="Please choose between:
+        Day/Night Mode
+        Standard Mode"
+        android:title="Day/Night" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="crashalytics"
+        android:title="Enable Crashalytics"
+        android:summary="Allow us to receive information on why your app may crash in order to improve your experience."/>
 
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
@@ -17,7 +23,6 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_title_display_name" />
-
     <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
          dismiss it. -->
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
