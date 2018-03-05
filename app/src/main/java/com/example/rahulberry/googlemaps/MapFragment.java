@@ -50,7 +50,9 @@ public class MapFragment extends SupportMapFragment
     public LatLng bike;
     public LatLng user;
     public String state;
-
+    public boolean firstTime = true;
+    public boolean firstSMS = true;
+    public boolean firstNotification = true;
     NotificationHelper helper;
 
     public LatLng latLng1;
@@ -65,7 +67,7 @@ public class MapFragment extends SupportMapFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        state = "Rest";
+        state = "Disarmed";
         BusProvider.getInstance().register(this);
         //helper = new NotificationHelper(getActivity());
     }
@@ -83,8 +85,8 @@ public class MapFragment extends SupportMapFragment
        BusProvider.getInstance().unregister(this);
    }
 
-    public boolean firstTime = true;
-    public boolean firstSMS = true;
+
+
     private final String UPDATE_MAP = "com.myco.myapp.UPDATE_MAP";
 
 
@@ -184,7 +186,7 @@ public class MapFragment extends SupportMapFragment
             TempMarker = BikeMarker;
 
         }
-        if ((bike != null) && (user != null) && (state.equals("Rest"))) {
+        if ((bike != null) && (user != null) && (state.equals("Disarmed"))) {
             Log.d(TAG1, state);
                 distance_check();
             }
@@ -216,7 +218,11 @@ public class MapFragment extends SupportMapFragment
 
         double meters = valueResult * 1000;
 
-        if(meters > 10){
+        if(meters < 10){
+            firstNotification = true;
+        }
+        if((meters > 10) && (firstNotification)){
+            firstNotification = false;
             sendLockReminder();
         }
     }
@@ -281,7 +287,7 @@ public class MapFragment extends SupportMapFragment
 
        // String TAG2 = "Compare";
       //  Log.i(TAG2, state);
-        if((bike != null) && (user != null) && (state.equals("Rest"))){
+        if((bike != null) && (user != null) && (state.equals("Disarmed"))){
             distance_check();
         }
     }

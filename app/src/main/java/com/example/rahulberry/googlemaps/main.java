@@ -132,7 +132,7 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
                      sendSMS("5555", "change mode");
                      BusProvider.getInstance().post(new mode(state));
                 } else {
-                    state = "Rest";
+                    state = "Disarmed";
                     edit.setTitle(state);
                     sendSMS("5555", "change mode");
                     BusProvider.getInstance().post(new mode(state));
