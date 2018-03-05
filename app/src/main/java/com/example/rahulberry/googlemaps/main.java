@@ -129,12 +129,12 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
                 if (user_mode.isChecked()) {
                      state = "Secure";
                      edit.setTitle(state);
-                     sendSMS("5555", "change mode");
+                     sendSMS("+447541241808", "secure");
                      BusProvider.getInstance().post(new mode(state));
                 } else {
                     state = "Rest";
                     edit.setTitle(state);
-                    sendSMS("5555", "change mode");
+                    sendSMS("+447541241808", "unlock");
                     BusProvider.getInstance().post(new mode(state));
                 }
             }
