@@ -40,7 +40,7 @@
               <item
                   android:id="@+id/nav_item1"
                   android:icon="@drawable/ic_legal"
-                  android:title="Secure"
+                  android:title="Rest"
                   app:actionLayout="@layout/layout_switch"
                   />
               <item
@@ -49,6 +49,5 @@
                   android:icon="@drawable/ic_person_b"
                   />
           </menu>
-
       </item>
 </menu>

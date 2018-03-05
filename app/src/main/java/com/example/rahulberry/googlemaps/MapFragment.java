@@ -1,28 +1,18 @@
 package com.example.rahulberry.googlemaps;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
+
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
-import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -46,6 +36,7 @@ import java.util.Calendar;
 import java.util.Random;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+
 import com.squareup.otto.Subscribe;
 
 import static android.content.ContentValues.TAG;
@@ -58,6 +49,7 @@ public class MapFragment extends SupportMapFragment
 
     public LatLng bike;
     public LatLng user;
+    public String state;
 
     NotificationHelper helper;
 
@@ -71,23 +63,25 @@ public class MapFragment extends SupportMapFragment
     Marker BikeMarker;
     Marker TempMarker;
     @Override
-    public void onResume() {
-        super.onResume();
-        setUpMapIfNeeded();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        state = "Rest";
         BusProvider.getInstance().register(this);
-
-        helper = new NotificationHelper(getActivity());
+        //helper = new NotificationHelper(getActivity());
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        BusProvider.getInstance().unregister(this);
-        //stop location updates when Activity is no longer active
-        /*if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }*/
+    public void onResume() {
+        super.onResume();
+        setUpMapIfNeeded();
+        helper = new NotificationHelper(getActivity());
     }
+
+   @Override
+   public void onDestroy(){
+       super.onDestroy();
+       BusProvider.getInstance().unregister(this);
+   }
 
     public boolean firstTime = true;
     public boolean firstSMS = true;
@@ -154,9 +148,17 @@ public class MapFragment extends SupportMapFragment
             }
         }
 
+    String TAG1 = "@subscribe";
+    @Subscribe
+    public void getMode(mode event){
+        state = event.usermode;
+        Log.i(TAG1, state);
+    }
+
+
     @Subscribe
     public void text_received(coordinates event) {
-
+        Log.d(TAG, "text in map");
         String bikeloc = event.bikecoordinates;
         //extract coordinates
         String[] parts = bikeloc.split(" ");
@@ -182,10 +184,13 @@ public class MapFragment extends SupportMapFragment
             TempMarker = BikeMarker;
 
         }
-        if((bike != null) && (user != null)) {
-            distance_check();
+        if ((bike != null) && (user != null) && (state.equals("Rest"))) {
+            Log.d(TAG1, state);
+                distance_check();
+            }
         }
-    }
+
+
 
     public void distance_check(){
         int Radius = 6371;// radius of earth in Km
@@ -214,11 +219,13 @@ public class MapFragment extends SupportMapFragment
         if(meters > 10){
             sendLockReminder();
         }
-        return;
     }
 
-    public void sendLockReminder() {
-        NotificationCompat.Builder builder = helper.getnotificationChannelNotification("BikeSafe","Did you forget to lock your bike?");
+
+
+
+    public void sendLockReminder(){
+            NotificationCompat.Builder builder = helper.getnotificationChannelNotification("BikeSafe","Did you forget to lock your bike?");
         helper.getManager().notify(new Random().nextInt(),builder.build());
         return;
     }
@@ -271,7 +278,10 @@ public class MapFragment extends SupportMapFragment
             firstTime = false;
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,11));
         }
-        if((bike != null) && (user != null)) {
+
+       // String TAG2 = "Compare";
+      //  Log.i(TAG2, state);
+        if((bike != null) && (user != null) && (state.equals("Rest"))){
             distance_check();
         }
     }

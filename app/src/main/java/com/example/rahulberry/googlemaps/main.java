@@ -33,6 +33,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class main extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    String state;
     SupportMapFragment smapfragment;
     MapFragment mapFragment;
     FirebaseAuth mAuth;
@@ -53,8 +54,10 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         smapfragment = SupportMapFragment.newInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         //Makes a new mapfragmemnt;
         mapFragment = new MapFragment();
@@ -116,18 +119,23 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         navigationView.getMenu().findItem(R.id.nav_item1)
                 .setActionView(new Switch(this));
 
+
         final Switch user_mode = (Switch) navigationView.getMenu().findItem(R.id.nav_item1).getActionView();
-        user_mode.setChecked(true);
+        user_mode.setChecked(false
+        );
         user_mode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
                 if (user_mode.isChecked()) {
-                     edit.setTitle("Secure");
+                     state = "Secure";
+                     edit.setTitle(state);
                      sendSMS("5555", "change mode");
+                     BusProvider.getInstance().post(new mode(state));
                 } else {
-                     edit.setTitle("Rest");
+                    state = "Rest";
+                    edit.setTitle(state);
                     sendSMS("5555", "change mode");
-
+                    BusProvider.getInstance().post(new mode(state));
                 }
             }
 

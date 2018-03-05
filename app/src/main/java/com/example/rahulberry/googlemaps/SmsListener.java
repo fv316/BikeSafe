@@ -24,12 +24,9 @@ public class SmsListener extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String string = "boob";
         Log.i(TAG, "in Receiver. intent.getAction():" + intent.getAction());
-        if (intent.getAction()
-                .equals("android.provider.Telephony.SMS_RECEIVED")) {
-            Bundle bundle = intent.getExtras(); // ---get the SMS message passed
-            // in---
+        if (intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
+            Bundle bundle = intent.getExtras(); // ---get the SMS message passed in--- //
             if (bundle != null) {
                 // get sms objects
                 Object[] pdus = (Object[]) bundle.get("pdus");
