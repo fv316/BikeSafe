@@ -40,7 +40,7 @@
               <item
                   android:id="@+id/nav_item1"
                   android:icon="@drawable/ic_legal"
-                  android:title="Rest"
+                  android:title="Disarmed"
                   app:actionLayout="@layout/layout_switch"
                   />
               <item

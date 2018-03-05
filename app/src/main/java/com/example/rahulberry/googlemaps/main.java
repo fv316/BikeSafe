@@ -132,7 +132,7 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
                      sendSMS("+447541241808", "secure");
                      BusProvider.getInstance().post(new mode(state));
                 } else {
-                    state = "Rest";
+                    state = "Disarmed";
                     edit.setTitle(state);
                     sendSMS("+447541241808", "unlock");
                     BusProvider.getInstance().post(new mode(state));
