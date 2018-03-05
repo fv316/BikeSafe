@@ -32,7 +32,7 @@ public class NotificationHelper extends ContextWrapper {
         return new NotificationCompat.Builder(getApplicationContext(),CHANNEL_ID)
                 .setContentText(body)
                 .setContentTitle(title)
-                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setSmallIcon(R.mipmap.ic_icon_round)
                 .setAutoCancel(true);
     }
 }

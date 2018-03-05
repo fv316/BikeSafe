@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -19,14 +20,10 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class login extends AppCompatActivity implements View.OnClickListener{
 
-    Button create_account;
-    Button login;
-
-
     FirebaseAuth mAuth;
     EditText editTextEmail, editTextPassword;
     ProgressBar progressBar;
-
+    Button forgotPassword;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +35,7 @@ public class login extends AppCompatActivity implements View.OnClickListener{
         editTextEmail = (EditText) findViewById(R.id.editTextEmail);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         progressBar = (ProgressBar) findViewById(R.id.progressbar);
+        forgotPassword = (Button) findViewById(R.id.forgot_password);
 
         findViewById(R.id.login2).setOnClickListener(this);
         findViewById(R.id.create_new).setOnClickListener(this);
@@ -73,6 +71,23 @@ public class login extends AppCompatActivity implements View.OnClickListener{
         }
             progressBar.setVisibility(View.VISIBLE);
 
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            String email = editTextEmail.getText().toString().trim();
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth auth = FirebaseAuth.getInstance();
+                auth.sendPasswordResetEmail(email)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(com.example.rahulberry.googlemaps.login.this, "Verification Email Sent", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+            }
+        });
+
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
 
             @Override
@@ -88,6 +103,7 @@ public class login extends AppCompatActivity implements View.OnClickListener{
                 }
             }
         });
+
     }
 
     //THIS KEEPS THE USER LOGGED IN
@@ -99,6 +115,7 @@ public class login extends AppCompatActivity implements View.OnClickListener{
             finish();
         }
     }
+
 
     @Override
     public void onClick(View view) {

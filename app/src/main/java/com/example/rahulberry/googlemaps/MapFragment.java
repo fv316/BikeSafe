@@ -37,6 +37,7 @@ import java.util.Random;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 
+import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import static android.content.ContentValues.TAG;
@@ -79,13 +80,12 @@ public class MapFragment extends SupportMapFragment
         helper = new NotificationHelper(getActivity());
     }
 
+
    @Override
    public void onDestroy(){
        super.onDestroy();
        BusProvider.getInstance().unregister(this);
    }
-
-
 
     private final String UPDATE_MAP = "com.myco.myapp.UPDATE_MAP";
 
@@ -162,6 +162,7 @@ public class MapFragment extends SupportMapFragment
     public void text_received(coordinates event) {
         Log.d(TAG, "text in map");
         String bikeloc = event.bikecoordinates;
+        Toast.makeText(getActivity(),bikeloc, Toast.LENGTH_LONG).show();
         //extract coordinates
         String[] parts = bikeloc.split(" ");
         Double Latitude = (Double.parseDouble(parts[0]))/1000000;
@@ -282,7 +283,7 @@ public class MapFragment extends SupportMapFragment
         //move map camera
         if(firstTime){
             firstTime = false;
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,11));
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,16));
         }
 
        // String TAG2 = "Compare";
