@@ -3,15 +3,14 @@
         android:defaultValue="true"
         android:key="map_view_switch"
         android:summary="Please choose between:
-        Day/Night Mode
-        Standard Mode"
+       \n Day/Night Mode
+       \n Standard Mode"
         android:title="Day/Night" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="crashalytics"
         android:title="Enable Crashalytics"
         android:summary="Allow us to receive information on why your app may crash in order to improve your experience."/>
-
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
     <EditTextPreference

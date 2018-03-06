@@ -129,16 +129,16 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
                 if (user_mode.isChecked()) {
                      state = "Secure";
                      edit.setTitle(state);
-                     //sendSMS("+447713606066", "Secure"); //Rahul
+                     sendSMS("+447713606066", "Secure"); //Rahul
                     // sendSMS("+447541241808", "Cecure"); //Niall
-                    sendSMS("+447936663084", "Secure"); //Lydia
+                   // sendSMS("+447936663084", "Secure"); //Lydia
                      BusProvider.getInstance().post(new mode(state));
                 } else {
                     state = "Disarmed";
                     edit.setTitle(state);
-                   // sendSMS("+447713606066", "Disarmed"); //Rahul
+                    sendSMS("+447713606066", "Disarmed"); //Rahul
                     //sendSMS("+447541241808", "Disarmed"); //Niall
-                    sendSMS("+447936663084", "Disarmed"); //Lydia
+                  //  sendSMS("+447936663084", "Disarmed"); //Lydia
                     BusProvider.getInstance().post(new mode(state));
                 }
             }
