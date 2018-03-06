@@ -228,11 +228,7 @@ public class MapFragment extends SupportMapFragment
         double valueResult = Radius * c;
         double km = valueResult / 1;
         DecimalFormat newFormat = new DecimalFormat("####");
-        int kmInDec = Integer.valueOf(newFormat.format(km));
         double meter = valueResult % 1000;
-        int meterInDec = Integer.valueOf(newFormat.format(meter));
-        Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
-                + " Meter   " + meterInDec);
 
         double meters = valueResult * 1000;
 
@@ -296,9 +292,7 @@ public class MapFragment extends SupportMapFragment
         double valueResult = Radius * c;
         double km = valueResult / 1;
         DecimalFormat newFormat = new DecimalFormat("####");
-        int kmInDec = Integer.valueOf(newFormat.format(km));
         double meter = valueResult % 1000;
-        int meterInDec = Integer.valueOf(newFormat.format(meter));
         double zoom = 20000/valueResult;
         zoom = Math.log(zoom)/Math.log(2);
         float floatzoom = (float)zoom;
