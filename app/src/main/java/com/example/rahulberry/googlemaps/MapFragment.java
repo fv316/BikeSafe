@@ -2,13 +2,17 @@ package com.example.rahulberry.googlemaps;
 
 import android.Manifest;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
@@ -71,6 +75,10 @@ public class MapFragment extends SupportMapFragment
         super.onCreate(savedInstanceState);
         state = "Disarmed";
         BusProvider.getInstance().register(this);
+        openLoc();
+        if(bike.latitude != 0) {
+            createBikeMarker();
+        }
         //helper = new NotificationHelper(getActivity());
     }
 
@@ -173,6 +181,23 @@ public class MapFragment extends SupportMapFragment
         Log.i(TAG1, state);
     }
 
+    public void openLoc() {
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        double locLat = Double.longBitsToDouble(sharedPref.getLong("Lat", Double.doubleToLongBits(0)));
+        double locLong = Double.longBitsToDouble(sharedPref.getLong("Long", Double.doubleToLongBits(0)));
+
+        bike = new LatLng(locLat, locLong);
+    }
+
+
+    public void saveLoc(LatLng latLng) {
+        SharedPreferences pref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor edt = pref.edit();
+        edt.putLong("Lat", Double.doubleToRawLongBits(latLng.latitude));
+        edt.putLong("Long", Double.doubleToRawLongBits(latLng.longitude));
+        edt.commit();
+    }
+
 
     @Subscribe
     public void text_received(coordinates event) {
@@ -192,22 +217,26 @@ public class MapFragment extends SupportMapFragment
         Double Longitude = (Double.parseDouble(parts[1]))/1000000;
         LatLng latLng = new LatLng(Latitude, Longitude);
         bike = latLng;
-        //need to think of an if statement that properly deletes the old marker: this didn't work;
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Your Bike");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-        BikeMarker = mGoogleMap.addMarker(markerOptions);
-          ///  TempMarker = BikeMarker;
-           // BikeMarker = TempMarker;
+
+        createBikeMarker();
+
+        saveLoc(bike);
 
         if ((bike != null) && (user != null) && (state.equals("Disarmed"))) {
             Log.d(TAG1, state);
                 distance_check();
             }
 
-            centreMap();
-        }
+        centreMap();
+    }
+
+    public void createBikeMarker() {
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(bike);
+        markerOptions.title("Your Bike");
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        BikeMarker = mGoogleMap.addMarker(markerOptions);
+    }
 
     public void distance_check(){
         int Radius = 6371;// radius of earth in Km
