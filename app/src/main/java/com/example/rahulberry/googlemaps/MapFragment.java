@@ -65,6 +65,7 @@ public class MapFragment extends SupportMapFragment
     Marker mCurrLocationMarker;
     Marker BikeMarker;
     Marker TempMarker;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,12 +81,27 @@ public class MapFragment extends SupportMapFragment
         helper = new NotificationHelper(getActivity());
     }
 
+    public void isFinishing() {
+        ;
+        if (getActivity().isFinishing()) {
+            onDestroy();
+        }
+    }
 
-   @Override
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (getActivity().isFinishing()) {
+            BusProvider.getInstance().unregister(this);
+        }
+    }
+
+
+  /* @Override
    public void onDestroy(){
        super.onDestroy();
        BusProvider.getInstance().unregister(this);
-   }
+   }*/
 
     private final String UPDATE_MAP = "com.myco.myapp.UPDATE_MAP";
 
@@ -288,7 +304,7 @@ public class MapFragment extends SupportMapFragment
 
        // String TAG2 = "Compare";
       //  Log.i(TAG2, state);
-        if((bike != null) && (user != null) && (state.equals("Disarmed"))){
+            if((bike != null) && (user != null) && (state.equals("Disarmed"))){
             distance_check();
         }
     }
