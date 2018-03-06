@@ -186,7 +186,6 @@ public class MapFragment extends SupportMapFragment
         }
         Log.d(TAG, "text in map");
         String bikeloc = event.bikecoordinates;
-        Toast.makeText(getActivity(),bikeloc, Toast.LENGTH_LONG).show();
         //extract coordinates
         String[] parts = bikeloc.split(" ");
         Double Latitude = (Double.parseDouble(parts[0]))/1000000;
@@ -206,6 +205,8 @@ public class MapFragment extends SupportMapFragment
             Log.d(TAG1, state);
                 distance_check();
             }
+
+            centreMap();
         }
 
     public void distance_check(){
@@ -270,6 +271,35 @@ public class MapFragment extends SupportMapFragment
                 == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
+    }
+
+    public void centreMap() {
+        double lon1 = bike.longitude;
+        double lat1 = bike.latitude;
+        double lon2 = user.longitude;
+        double lat2 = user.latitude;
+
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        LatLng latLng = new LatLng((lat1 + lat2)/2, (lon1 + lon2)/2); // midpoint found
+
+        int Radius = 6371;// radius of earth in Km
+        double dLat = Math.toRadians(lat2 - lat1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult = Radius * c;
+        double km = valueResult / 1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        int kmInDec = Integer.valueOf(newFormat.format(km));
+        double meter = valueResult % 1000;
+        int meterInDec = Integer.valueOf(newFormat.format(meter));
+        double zoom = 20000/valueResult;
+        zoom = Math.log(zoom)/Math.log(2);
+        float floatzoom = (float)zoom;
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,floatzoom));
     }
 
     @Override
