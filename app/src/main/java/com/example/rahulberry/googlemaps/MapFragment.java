@@ -178,7 +178,6 @@ public class MapFragment extends SupportMapFragment
     public void text_received(coordinates event) {
         Log.d(TAG, "text in map");
         String bikeloc = event.bikecoordinates;
-        Toast.makeText(getActivity(),bikeloc, Toast.LENGTH_LONG).show();
         //extract coordinates
         String[] parts = bikeloc.split(" ");
         Double Latitude = (Double.parseDouble(parts[0]))/1000000;
@@ -207,6 +206,8 @@ public class MapFragment extends SupportMapFragment
             Log.d(TAG1, state);
                 distance_check();
             }
+
+            centreMap();
         }
 
 
@@ -283,17 +284,25 @@ public class MapFragment extends SupportMapFragment
 
         double dLon = Math.toRadians(lon2 - lon1);
 
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
-        lon1 = Math.toRadians(lon1);
+        LatLng latLng = new LatLng((lat1 + lat2)/2, (lon1 + lon2)/2); // midpoint found
 
-        double Bx = Math.cos(lat2) * Math.cos(dLon);
-        double By = Math.cos(lat2) * Math.sin(dLon);
-        double lat3 = Math.atan2(Math.sin(lat1) + Math.sin(lat2), Math.sqrt((Math.cos(lat1) + Bx) * (Math.cos(lat1) + Bx) + By * By));
-        double lon3 = lon1 + Math.atan2(By, Math.cos(lat1) + Bx);
-
-        LatLng latLng = new LatLng(lat3, lon3);
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,16));
+        int Radius = 6371;// radius of earth in Km
+        double dLat = Math.toRadians(lat2 - lat1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult = Radius * c;
+        double km = valueResult / 1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        int kmInDec = Integer.valueOf(newFormat.format(km));
+        double meter = valueResult % 1000;
+        int meterInDec = Integer.valueOf(newFormat.format(meter));
+        double zoom = 20000/valueResult;
+        zoom = Math.log(zoom)/Math.log(2);
+        float floatzoom = (float)zoom;
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,floatzoom));
     }
 
     @Override
