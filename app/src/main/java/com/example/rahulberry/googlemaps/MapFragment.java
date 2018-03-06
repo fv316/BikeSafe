@@ -166,7 +166,7 @@ public class MapFragment extends SupportMapFragment
             }
         }
 
-    String TAG1 = "@subscribe";
+    String TAG1 = "bus with mode";
     @Subscribe
     public void getMode(mode event){
         state = event.usermode;
@@ -176,6 +176,14 @@ public class MapFragment extends SupportMapFragment
 
     @Subscribe
     public void text_received(coordinates event) {
+        if(firstSMS){
+            TempMarker = BikeMarker;
+            firstSMS = false;
+        }
+        if(BikeMarker != TempMarker) {
+            TempMarker = BikeMarker;
+            BikeMarker.remove();
+        }
         Log.d(TAG, "text in map");
         String bikeloc = event.bikecoordinates;
         Toast.makeText(getActivity(),bikeloc, Toast.LENGTH_LONG).show();
@@ -191,25 +199,14 @@ public class MapFragment extends SupportMapFragment
         markerOptions.title("Your Bike");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
         BikeMarker = mGoogleMap.addMarker(markerOptions);
-        if(firstSMS){
-            TempMarker = BikeMarker;
-            BikeMarker = TempMarker;
-            firstSMS = false;
-        }
-        if(BikeMarker != TempMarker) {
-            TempMarker.remove();
-        }
-        else{
-            TempMarker = BikeMarker;
+          ///  TempMarker = BikeMarker;
+           // BikeMarker = TempMarker;
 
-        }
         if ((bike != null) && (user != null) && (state.equals("Disarmed"))) {
             Log.d(TAG1, state);
                 distance_check();
             }
         }
-
-
 
     public void distance_check(){
         int Radius = 6371;// radius of earth in Km

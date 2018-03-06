@@ -77,6 +77,7 @@ public class UserInfo extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(UserInfo.this, main.class);
                 startActivity(i);
+                finish();
             }
         });
 
