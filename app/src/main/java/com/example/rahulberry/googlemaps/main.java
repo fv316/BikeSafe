@@ -269,7 +269,7 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
             View parentView = getLayoutInflater().inflate(R.layout.bottom_sheet, null);
             bottomSheetDialog.setContentView(parentView);
             BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from((View) parentView.getParent());
-            bottomSheetBehavior.setPeekHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics()));
+            bottomSheetBehavior.setState(3);
             bottomSheetDialog.show();
             Button fb = (Button) parentView.findViewById(R.id.button_facebook);
             fb.setOnClickListener(new View.OnClickListener() {

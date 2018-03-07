@@ -8,11 +8,6 @@
         android:layout_height="219dp"
         android:orientation="vertical"
         android:padding="10dp">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Swipe Up!"
-            android:textAlignment="center"/>
         <Button
             android:id="@+id/button_facebook"
             android:layout_width="match_parent"
