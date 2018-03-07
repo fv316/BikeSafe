@@ -2,6 +2,10 @@ package com.example.rahulberry.googlemaps;
 
 import android.Manifest;
 
+<<<<<<< HEAD
+=======
+import android.app.Activity;
+>>>>>>> 773e96323864b670f37eb6468afb6816267e603d
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -88,6 +92,7 @@ public class MapFragment extends SupportMapFragment
         state = "Disarmed";
        final String TAG2 = "COORDINATES";
         BusProvider.getInstance().register(this);
+<<<<<<< HEAD
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -113,6 +118,12 @@ public class MapFragment extends SupportMapFragment
 
             }
         });
+=======
+        openLoc();
+        if(bike.latitude != 0) {
+            createBikeMarker();
+        }
+>>>>>>> 773e96323864b670f37eb6468afb6816267e603d
         //helper = new NotificationHelper(getActivity());
 
         }
@@ -201,6 +212,23 @@ public class MapFragment extends SupportMapFragment
         Log.i(TAG1, state);
     }
 
+    public void openLoc() {
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        double locLat = Double.longBitsToDouble(sharedPref.getLong("Lat", Double.doubleToLongBits(0)));
+        double locLong = Double.longBitsToDouble(sharedPref.getLong("Long", Double.doubleToLongBits(0)));
+
+        bike = new LatLng(locLat, locLong);
+    }
+
+
+    public void saveLoc(LatLng latLng) {
+        SharedPreferences pref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor edt = pref.edit();
+        edt.putLong("Lat", Double.doubleToRawLongBits(latLng.latitude));
+        edt.putLong("Long", Double.doubleToRawLongBits(latLng.longitude));
+        edt.commit();
+    }
+
 
     @Subscribe
     public void text_received(coordinates event) {
@@ -221,6 +249,7 @@ public class MapFragment extends SupportMapFragment
         Double Longitude = (Double.parseDouble(parts[1]))/1000000;
         LatLng latLng = new LatLng(Latitude, Longitude);
         bike = latLng;
+<<<<<<< HEAD
         Firebase mRefChild = mRef.child("Coordinates");
         mRefChild.setValue(parts[0]+" "+parts[1]);
         //need to think of an if statement that properly deletes the old marker: this didn't work;
@@ -231,15 +260,34 @@ public class MapFragment extends SupportMapFragment
         BikeMarker = mGoogleMap.addMarker(markerOptions);
           ///  TempMarker = BikeMarker;
            // BikeMarker = TempMarker;
+=======
+
+        createBikeMarker();
+
+        saveLoc(bike);
+>>>>>>> 773e96323864b670f37eb6468afb6816267e603d
 
         if ((bike != null) && (user != null) && (state.equals("Disarmed"))) {
             Log.d(TAG1, state);
                 distance_check();
             }
+<<<<<<< HEAD
         if(firstZoom){
             firstZoom = false;
             centreMap();
         }
+=======
+
+        centreMap();
+    }
+
+    public void createBikeMarker() {
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(bike);
+        markerOptions.title("Your Bike");
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        BikeMarker = mGoogleMap.addMarker(markerOptions);
+>>>>>>> 773e96323864b670f37eb6468afb6816267e603d
     }
 
     public void distance_check(){
@@ -258,11 +306,7 @@ public class MapFragment extends SupportMapFragment
         double valueResult = Radius * c;
         double km = valueResult / 1;
         DecimalFormat newFormat = new DecimalFormat("####");
-        int kmInDec = Integer.valueOf(newFormat.format(km));
         double meter = valueResult % 1000;
-        int meterInDec = Integer.valueOf(newFormat.format(meter));
-        Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
-                + " Meter   " + meterInDec);
 
         double meters = valueResult * 1000;
 
@@ -336,9 +380,7 @@ handler.postDelayed(new Runnable(){
         double valueResult = Radius * c;
         double km = valueResult / 1;
         DecimalFormat newFormat = new DecimalFormat("####");
-        int kmInDec = Integer.valueOf(newFormat.format(km));
         double meter = valueResult % 1000;
-        int meterInDec = Integer.valueOf(newFormat.format(meter));
         double zoom = 20000/valueResult;
         zoom = Math.log(zoom)/Math.log(2);
         float floatzoom = (float)zoom;
