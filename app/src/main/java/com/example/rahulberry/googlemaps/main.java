@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -16,9 +18,12 @@ import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
 import android.text.SpannableString;
 import android.text.style.TextAppearanceSpan;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -37,6 +42,7 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
     SupportMapFragment smapfragment;
     MapFragment mapFragment;
     FirebaseAuth mAuth;
+    public Button fb, tw, St;
 
 
     @Override
@@ -159,7 +165,6 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         }
     }
 
-
     public static Intent openFacebook(Context context) {
 
         try {
@@ -260,6 +265,37 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
             startActivity(i);
         } else if (id == R.id.nav_feedback) {
             item.setCheckable(false);
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(main.this);
+            View parentView = getLayoutInflater().inflate(R.layout.bottom_sheet, null);
+            bottomSheetDialog.setContentView(parentView);
+            BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from((View) parentView.getParent());
+            bottomSheetBehavior.setPeekHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics()));
+            bottomSheetDialog.show();
+            Button fb = (Button) parentView.findViewById(R.id.button_facebook);
+            fb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent facebookIntent = openFacebook(main.this);
+                    startActivity(facebookIntent);
+                }
+            });
+
+            Button tw = (Button) parentView.findViewById(R.id.button_twitter);
+            tw.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent twitterIntent = openTwitter(main.this);
+                    startActivity(twitterIntent);            }
+            });
+
+            Button St = (Button) parentView.findViewById(R.id.button_strava);
+            St.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent StravaIntent = openStrava(main.this);
+                    startActivity(StravaIntent);            }
+            });
+
         }else if(id == R.id.nav_settings){
             item.setCheckable(false);
             Intent i = new Intent(this, SettingsActivity.class);

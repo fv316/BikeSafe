@@ -20,6 +20,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 
 import java.util.List;
@@ -143,14 +144,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
+        Context context = getActivity().getApplicationContext();
+        public static final String VIEW = "MapView";
         public boolean test;
         private SwitchPreference pref;
         @Override
         public void onCreate(Bundle savedInstanceState) {
-
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
+            // then you use
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
@@ -158,15 +161,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("example_text"));
             bindPreferenceSummaryToValue(findPreference("example_list"));
             pref = (SwitchPreference)findPreference("map_view_switch");
+           // SharedPreferences.Editor prefs = context.getSharedPreferences(VIEW, MODE_PRIVATE).edit();
             pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference,
                                                   Object newValue) {
+                   String TAG = "SWITCH";
                     if(pref.isChecked()){
-
+                      //  prefs.getBoolean("DAY//NIGHT", true);
+                      //  SharedPreferences.Editor.
                     }
                     else{
-
+                      //  prefs.getBoolean("Standard", false);
                     }
                     
                   /*  boolean switched = ((SwitchPreference) preference).isChecked();

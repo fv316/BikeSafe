@@ -2,13 +2,15 @@ package com.example.rahulberry.googlemaps;
 
 import android.Manifest;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
@@ -16,6 +18,10 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -34,10 +40,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Random;
+import java.util.Timer;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import static android.content.ContentValues.TAG;
@@ -47,13 +53,18 @@ public class MapFragment extends SupportMapFragment
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
-
+        Context context = getActivity();
     public LatLng bike;
     public LatLng user;
     public String state;
     public boolean firstTime = true;
     public boolean firstSMS = true;
     public boolean firstNotification = true;
+    public boolean firstZoom = true;
+    public SharedPreferences prefs;
+
+//    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+  //  public boolean user_pref = sp.getBoolean("Day/Night", true);
     NotificationHelper helper;
 
     public LatLng latLng1;
@@ -65,27 +76,51 @@ public class MapFragment extends SupportMapFragment
     Marker mCurrLocationMarker;
     Marker BikeMarker;
     Marker TempMarker;
+    public Firebase mRef;
+    public Firebase mRef1;
+    public String lastCoordinates;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Firebase.setAndroidContext(getActivity());
+        mRef = new Firebase("https://trackingapp-194914.firebaseio.com/");
         super.onCreate(savedInstanceState);
         state = "Disarmed";
+       final String TAG2 = "COORDINATES";
         BusProvider.getInstance().register(this);
-        //helper = new NotificationHelper(getActivity());
-    }
+        mRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                lastCoordinates = dataSnapshot.child("Coordinates").getValue(String.class);
+                Log.i(TAG2, lastCoordinates);
+                String[] parts = lastCoordinates.split(" ");
+                Double Latitude = (Double.parseDouble(parts[0]))/1000000;
+                Double Longitude = (Double.parseDouble(parts[1]))/1000000;
+                LatLng latLng = new LatLng(Latitude, Longitude);
+                bike = latLng;
+                Firebase mRefChild = mRef.child("Coordinates");
+                mRefChild.setValue(parts[0]+" "+parts[1]);
+                //need to think of an if statement that properly deletes the old marker: this didn't work;
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                markerOptions.title("Your Bike");
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                TempMarker = mGoogleMap.addMarker(markerOptions);
+            }
 
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+        //helper = new NotificationHelper(getActivity());
+
+        }
     @Override
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
         helper = new NotificationHelper(getActivity());
-    }
-
-    public void isFinishing() {
-        ;
-        if (getActivity().isFinishing()) {
-            onDestroy();
-        }
     }
 
     @Override
@@ -95,13 +130,6 @@ public class MapFragment extends SupportMapFragment
             BusProvider.getInstance().unregister(this);
         }
     }
-
-
-  /* @Override
-   public void onDestroy(){
-       super.onDestroy();
-       BusProvider.getInstance().unregister(this);
-   }*/
 
     private final String UPDATE_MAP = "com.myco.myapp.UPDATE_MAP";
 
@@ -177,12 +205,13 @@ public class MapFragment extends SupportMapFragment
     @Subscribe
     public void text_received(coordinates event) {
         if(firstSMS){
+            TempMarker.remove();
             TempMarker = BikeMarker;
             firstSMS = false;
         }
         if(BikeMarker != TempMarker) {
             TempMarker = BikeMarker;
-            BikeMarker.remove();
+            TempMarker.remove();
         }
         Log.d(TAG, "text in map");
         String bikeloc = event.bikecoordinates;
@@ -192,6 +221,8 @@ public class MapFragment extends SupportMapFragment
         Double Longitude = (Double.parseDouble(parts[1]))/1000000;
         LatLng latLng = new LatLng(Latitude, Longitude);
         bike = latLng;
+        Firebase mRefChild = mRef.child("Coordinates");
+        mRefChild.setValue(parts[0]+" "+parts[1]);
         //need to think of an if statement that properly deletes the old marker: this didn't work;
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
@@ -205,9 +236,11 @@ public class MapFragment extends SupportMapFragment
             Log.d(TAG1, state);
                 distance_check();
             }
-
+        if(firstZoom){
+            firstZoom = false;
             centreMap();
         }
+    }
 
     public void distance_check(){
         int Radius = 6371;// radius of earth in Km
@@ -259,6 +292,16 @@ public class MapFragment extends SupportMapFragment
                 .build();
         mGoogleApiClient.connect();
     }
+
+   /*Handler handler = new Handler();
+    int delay = 1000; //milliseconds
+
+handler.postDelayed(new Runnable(){
+        public void run(){
+            //do something
+            handler.postDelayed(this, delay);
+        }
+    }, delay);*/
 
     @Override
     public void onConnected(Bundle bundle) {

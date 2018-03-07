@@ -65,7 +65,7 @@
             android:id="@+id/strava"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_icon="@drawable/ic_s"
+            fab:fab_icon="@drawable/ic_s_two"
             fab:fab_colorNormal="@color/orange"
             fab:fab_colorPressed="@color/orange_pressed"
             fab:fab_title="Strava"
