@@ -2,7 +2,6 @@ package com.example.rahulberry.googlemaps;
 
 import android.Manifest;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -39,7 +38,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Random;
-import java.util.Timer;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 
@@ -52,18 +50,14 @@ public class MapFragment extends SupportMapFragment
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
-        Context context = getActivity();
     public LatLng bike;
     public LatLng user;
     public String state;
     public boolean firstTime = true;
     public boolean firstSMS = true;
     public boolean firstNotification = true;
-    public boolean firstZoom = true;
     public SharedPreferences prefs;
 
-//    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-  //  public boolean user_pref = sp.getBoolean("Day/Night", true);
     NotificationHelper helper;
 
     public LatLng latLng1;
@@ -76,8 +70,8 @@ public class MapFragment extends SupportMapFragment
     Marker BikeMarker;
     Marker TempMarker;
     public Firebase mRef;
-    public Firebase mRef1;
     public String lastCoordinates;
+    public String UserMode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,7 +79,7 @@ public class MapFragment extends SupportMapFragment
         mRef = new Firebase("https://trackingapp-194914.firebaseio.com/");
         super.onCreate(savedInstanceState);
         state = "Disarmed";
-       final String TAG2 = "COORDINATES";
+        final String TAG2 = "COORDINATES";
         BusProvider.getInstance().register(this);
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -97,9 +91,15 @@ public class MapFragment extends SupportMapFragment
                 Double Longitude = (Double.parseDouble(parts[1]))/1000000;
                 LatLng latLng = new LatLng(Latitude, Longitude);
                 bike = latLng;
+                try{
+                    centreMap();
+                    firstTime = false;
+                }catch(Exception e){
+                    Log.d(TAG, "Unable to centre map");
+
+                }
                 Firebase mRefChild = mRef.child("Coordinates");
                 mRefChild.setValue(parts[0]+" "+parts[1]);
-                //need to think of an if statement that properly deletes the old marker: this didn't work;
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
                 markerOptions.title("Your Bike");
@@ -114,8 +114,49 @@ public class MapFragment extends SupportMapFragment
         });
 
     }
+
+    public void centreMap() {
+        double lon1 = bike.longitude;
+        double lat1 = bike.latitude;
+        double lon2 = user.longitude;
+        double lat2 = user.latitude;
+
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        LatLng latLng = new LatLng((lat1 + lat2)/2, (lon1 + lon2)/2); // midpoint found
+
+        int Radius = 6371;// radius of earth in Km
+        double dLat = Math.toRadians(lat2 - lat1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult = Radius * c;
+        double km = valueResult / 1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        double meter = valueResult % 1000;
+        double zoom = 20000/valueResult;
+        zoom = Math.log(zoom)/Math.log(2);
+        float floatzoom = (float)zoom;
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,floatzoom));
+    }
+
     @Override
     public void onResume() {
+        mRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserMode = dataSnapshot.child("UserMode").getValue(String.class);
+                Log.d(TAG, UserMode);
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
         super.onResume();
         setUpMapIfNeeded();
         helper = new NotificationHelper(getActivity());
@@ -142,40 +183,43 @@ public class MapFragment extends SupportMapFragment
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
-      Calendar time = Calendar.getInstance();
-            int currentTime = time.get(Calendar.HOUR_OF_DAY);
-        if (currentTime >= 18) {
-            try {
-                // Customise the styling of the base map using a JSON object defined
-                // in a raw resource file.
-                boolean success = googleMap.setMapStyle(
-                        MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.night_view));
+        Calendar time = Calendar.getInstance();
+        int currentTime = time.get(Calendar.HOUR_OF_DAY);
+        //Log.d(TAG, UserMode);
+            if (currentTime >= 18) {
+                try {
+                    // Customise the styling of the base map using a JSON object defined
+                    // in a raw resource file.
+                    boolean success = googleMap.setMapStyle(
+                            MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.night_view));
 
-                if (!success) {
-                    Log.e(TAG, "Style parsing failed.");
+                    if (!success) {
+                        Log.e(TAG, "Style parsing failed.");
+                    }
+                } catch (Resources.NotFoundException e) {
+                    Log.e(TAG, "Can't find style. Error: ", e);
                 }
-            } catch (Resources.NotFoundException e) {
-                Log.e(TAG, "Can't find style. Error: ", e);
-            }
-        } else {
-            try {
-                // Customise the styling of the base map using a JSON object defined
-                // in a raw resource file.
-                boolean success = googleMap.setMapStyle(
-                        MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.day));
+            } else {
+                try {
+                    // Customise the styling of the base map using a JSON object defined
+                    // in a raw resource file.
+                    boolean success = googleMap.setMapStyle(
+                            MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.day));
 
-                if (!success) {
-                    Log.e(TAG, "Style parsing failed.");
+                    if (!success) {
+                        Log.e(TAG, "Style parsing failed.");
+                    }
+                } catch (Resources.NotFoundException e) {
+                    Log.e(TAG, "Can't find style. Error: ", e);
                 }
-            } catch (Resources.NotFoundException e) {
-                Log.e(TAG, "Can't find style. Error: ", e);
             }
-        }
+
+
             //Initialize Google Play Services
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if ((ContextCompat.checkSelfPermission(getActivity(),
                         Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED)&&(ContextCompat.checkSelfPermission(getActivity(),
+                        == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(getActivity(),
                         Manifest.permission.SEND_SMS)
                         == PackageManager.PERMISSION_GRANTED)) {
                     //Location Permission already granted
@@ -192,6 +236,7 @@ public class MapFragment extends SupportMapFragment
             }
         }
 
+
     String TAG1 = "bus with mode";
     @Subscribe
     public void getMode(mode event){
@@ -205,12 +250,10 @@ public class MapFragment extends SupportMapFragment
     public void text_received(coordinates event) {
         if(firstSMS){
             TempMarker.remove();
-            TempMarker = BikeMarker;
             firstSMS = false;
         }
-        if(BikeMarker != TempMarker) {
-            TempMarker = BikeMarker;
-            TempMarker.remove();
+        if(BikeMarker != null) {
+            BikeMarker.remove();
         }
         Log.d(TAG, "text in map");
         String bikeloc = event.bikecoordinates;
@@ -230,15 +273,11 @@ public class MapFragment extends SupportMapFragment
         BikeMarker = mGoogleMap.addMarker(markerOptions);
           ///  TempMarker = BikeMarker;
            // BikeMarker = TempMarker;
-        
+
         if ((bike != null) && (user != null) && (state.equals("Disarmed"))) {
             Log.d(TAG1, state);
                 distance_check();
             }
-        if(firstZoom){
-            firstZoom = false;
-            centreMap();
-        }
     }
 
     public void distance_check(){
@@ -309,33 +348,6 @@ handler.postDelayed(new Runnable(){
                 == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
-    }
-
-    public void centreMap() {
-        double lon1 = bike.longitude;
-        double lat1 = bike.latitude;
-        double lon2 = user.longitude;
-        double lat2 = user.latitude;
-
-        double dLon = Math.toRadians(lon2 - lon1);
-
-        LatLng latLng = new LatLng((lat1 + lat2)/2, (lon1 + lon2)/2); // midpoint found
-
-        int Radius = 6371;// radius of earth in Km
-        double dLat = Math.toRadians(lat2 - lat1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(lat1))
-                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
-                * Math.sin(dLon / 2);
-        double c = 2 * Math.asin(Math.sqrt(a));
-        double valueResult = Radius * c;
-        double km = valueResult / 1;
-        DecimalFormat newFormat = new DecimalFormat("####");
-        double meter = valueResult % 1000;
-        double zoom = 20000/valueResult;
-        zoom = Math.log(zoom)/Math.log(2);
-        float floatzoom = (float)zoom;
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,floatzoom));
     }
 
     @Override
