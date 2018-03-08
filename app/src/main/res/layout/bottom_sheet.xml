@@ -3,44 +3,58 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="219dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="10dp">
+
         <Button
             android:id="@+id/button_facebook"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_facebook_two"
-            android:background="@color/dark_blue"
             android:layout_marginTop="10dp"
+            android:background="@color/dark_blue"
+            android:drawableLeft="@drawable/ic_facebook_two"
             android:text="Facebook             "
+            android:textAlignment="center"
             android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textAlignment="center"/>
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/button_twitter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@color/light_blue"
             android:drawableLeft="@drawable/ic_twitter_two"
             android:paddingLeft="10dp"
-            android:background="@color/light_blue"
-            android:layout_marginTop="10dp"
             android:text="Twitter                "
-            android:textStyle="bold"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
         <Button
             android:id="@+id/button_strava"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_s_two"
-            android:background="@color/orange"
             android:layout_marginTop="10dp"
+            android:background="@color/orange"
+            android:drawableLeft="@drawable/ic_s_two"
             android:text="Strava              "
-            android:textStyle="bold"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/button_website"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@color/half_black"
+            android:drawableLeft="@drawable/ic_email"
+            android:text="BikeSafe Website           "
+            android:textColor="@color/white"
+            android:textStyle="bold" />
 
     </LinearLayout>
 </LinearLayout>

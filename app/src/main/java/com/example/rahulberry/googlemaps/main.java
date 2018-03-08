@@ -2,6 +2,8 @@ package com.example.rahulberry.googlemaps;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -37,12 +39,16 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
+
 public class main extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     String state;
     SupportMapFragment smapfragment;
     MapFragment mapFragment;
     FirebaseAuth mAuth;
-    public Button fb, tw, St;
+    public Button fb, tw, St, Wb;
 
 
     @Override
@@ -165,6 +171,46 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         }
     }
 
+    private void shareTwitter(String message) {
+        Intent tweetIntent = new Intent(Intent.ACTION_SEND);
+        tweetIntent.putExtra(Intent.EXTRA_TEXT, message);
+        tweetIntent.setType("text/plain");
+
+        PackageManager packManager = getPackageManager();
+        List<ResolveInfo> resolvedInfoList = packManager.queryIntentActivities(tweetIntent, PackageManager.MATCH_DEFAULT_ONLY);
+
+        boolean resolved = false;
+        for (ResolveInfo resolveInfo : resolvedInfoList) {
+            if (resolveInfo.activityInfo.packageName.startsWith("com.twitter.android")) {
+                tweetIntent.setClassName(
+                        resolveInfo.activityInfo.packageName,
+                        resolveInfo.activityInfo.name);
+                resolved = true;
+                break;
+            }
+        }
+        if (resolved) {
+            startActivity(tweetIntent);
+        } else {
+            Intent i = new Intent();
+            i.putExtra(Intent.EXTRA_TEXT, message);
+            i.setAction(Intent.ACTION_VIEW);
+            i.setData(Uri.parse("https://twitter.com/intent/tweet?text=" + urlEncode(message)));
+            startActivity(i);
+            Toast.makeText(this, "Twitter app isn't found", Toast.LENGTH_LONG).show();
+        }
+    }
+    String TAG1 = "somestuff";
+    private String urlEncode(String s) {
+        try {
+            return URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            Log.d(TAG1, "UTF-8 should always be supported", e);
+            return "";
+        }
+    }
+
+
     public static Intent openFacebook(Context context) {
 
         try {
@@ -263,7 +309,7 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
             Intent i;
             i = new Intent(this,Account.class);
             startActivity(i);
-        } else if (id == R.id.nav_feedback) {
+        } else if (id == R.id.nav_contact) {
             item.setCheckable(false);
             BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(main.this);
             View parentView = getLayoutInflater().inflate(R.layout.bottom_sheet, null);
@@ -296,16 +342,63 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
                     startActivity(StravaIntent);            }
             });
 
+            Button Wb = (Button) parentView.findViewById(R.id.button_website);
+            St.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.niallrees.com"));
+                    startActivity(browserIntent);
+                }
+            });
+
+
         }else if(id == R.id.nav_settings){
             item.setCheckable(false);
             Intent i = new Intent(this, SettingsActivity.class);
             startActivity(i);
         } else if (id == R.id.nav_share) {
             item.setCheckable(false);
-        } else if (id == R.id.nav_contact) {
             item.setCheckable(false);
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.niallrees.com"));
-            startActivity(browserIntent);
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(main.this);
+            View parentView = getLayoutInflater().inflate(R.layout.bottom_sheet, null);
+            bottomSheetDialog.setContentView(parentView);
+            BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from((View) parentView.getParent());
+            bottomSheetBehavior.setState(3);
+            bottomSheetDialog.show();
+            Button fb = (Button) parentView.findViewById(R.id.button_facebook);
+            fb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent facebookIntent = openFacebook(main.this);
+                    startActivity(facebookIntent);
+                }
+            });
+
+            Button tw = (Button) parentView.findViewById(R.id.button_twitter);
+            tw.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                 shareTwitter("BIKESAFE IS THE BEST WOOO LIT LITLIT");
+                }
+            });
+
+            Button St = (Button) parentView.findViewById(R.id.button_strava);
+            St.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent StravaIntent = openStrava(main.this);
+                    startActivity(StravaIntent);            }
+            });
+
+            Button Wb = (Button) parentView.findViewById(R.id.button_website);
+            St.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.niallrees.com"));
+                    startActivity(browserIntent);
+                }
+            });
+
         }else if(id == R.id.logout){
             item.setCheckable(false);
             FirebaseAuth.getInstance().signOut();

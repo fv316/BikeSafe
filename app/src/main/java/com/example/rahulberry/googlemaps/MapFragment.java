@@ -75,12 +75,12 @@ public class MapFragment extends SupportMapFragment
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        BusProvider.getInstance().register(this);
         Firebase.setAndroidContext(getActivity());
         mRef = new Firebase("https://trackingapp-194914.firebaseio.com/");
         super.onCreate(savedInstanceState);
         state = "Disarmed";
         final String TAG2 = "COORDINATES";
-        BusProvider.getInstance().register(this);
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

@@ -168,10 +168,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     if(pref.isChecked()){
                         Firebase mRefChild = mRef.child("UserMode");
                         mRefChild.setValue("DAY/NIGHT");
+                        pref.setDefaultValue(true);
                     }
                     else{
                         Firebase mRefChild = mRef.child("UserMode");
                         mRefChild.setValue("NORMAL");
+                        pref.setDefaultValue(false);
                     }
                     return true;
                 }
