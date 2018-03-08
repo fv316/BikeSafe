@@ -28,6 +28,10 @@ import com.firebase.client.Firebase;
 import java.util.List;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
+
+    private static SharedPreferences mapSetting;
+
+
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -143,13 +147,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
-        Firebase mRef;
+        Context context = getActivity().getApplicationContext();
         public static final String VIEW = "MapView";
+        public boolean test;
         private SwitchPreference pref;
+        Firebase mRef;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            mRef = new Firebase("https://trackingapp-194914.firebaseio.com/");
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
             // then you use
@@ -160,6 +166,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("example_text"));
             bindPreferenceSummaryToValue(findPreference("example_list"));
             pref = (SwitchPreference)findPreference("map_view_switch");
+           // SharedPreferences.Editor prefs = context.getSharedPreferences(VIEW, MODE_PRIVATE).edit();
             pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference,
@@ -174,7 +181,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         Firebase mRefChild = mRef.child("UserMode");
                         mRefChild.setValue("NORMAL");
                         pref.setDefaultValue(false);
+                      //  prefs.getBoolean("DAY//NIGHT", true);
+                      //  SharedPreferences.Editor.
                     }
+
+                  /*  boolean switched = ((SwitchPreference) preference).isChecked();
+                    mapSetting.putBoolean()
+                    update = !switched;
+                    mEditor = mUpdate.edit();
+                    mEditor.putBoolean("update", update);
+                    mEditor.commit();
+                    autoUpdate.setSummary(update == false ? "Disabled" : "Enabled");
+*/
                     return true;
                 }
 
