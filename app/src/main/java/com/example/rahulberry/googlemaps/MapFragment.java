@@ -56,11 +56,10 @@ public class MapFragment extends SupportMapFragment
     public boolean firstTime = true;
     public boolean firstSMS = true;
     public boolean firstNotification = true;
-    public SharedPreferences prefs;
+    public boolean map_theme;
 
     NotificationHelper helper;
 
-    public LatLng latLng1;
     GoogleMap mGoogleMap;
     SupportMapFragment mapFrag;
     LocationRequest mLocationRequest;
@@ -75,97 +74,39 @@ public class MapFragment extends SupportMapFragment
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        BusProvider.getInstance().register(this);
-        Firebase.setAndroidContext(getActivity());
-        mRef = new Firebase("https://trackingapp-194914.firebaseio.com/");
         super.onCreate(savedInstanceState);
-        state = "Disarmed";
-        final String TAG2 = "COORDINATES";
-        mRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                lastCoordinates = dataSnapshot.child("Coordinates").getValue(String.class);
-                Log.i(TAG2, lastCoordinates);
-                String[] parts = lastCoordinates.split(" ");
-                Double Latitude = (Double.parseDouble(parts[0]))/1000000;
-                Double Longitude = (Double.parseDouble(parts[1]))/1000000;
-                LatLng latLng = new LatLng(Latitude, Longitude);
-                bike = latLng;
-                try{
-                    centreMap();
-                    firstTime = false;
-                }catch(Exception e){
-                    Log.d(TAG, "Unable to centre map");
-
-                }
-                Firebase mRefChild = mRef.child("Coordinates");
-                mRefChild.setValue(parts[0]+" "+parts[1]);
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
-                markerOptions.title("Your Bike");
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                TempMarker = mGoogleMap.addMarker(markerOptions);
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
+        BusProvider.getInstance().register(this);
 
     }
 
-    public void centreMap() {
-        double lon1 = bike.longitude;
-        double lat1 = bike.latitude;
-        double lon2 = user.longitude;
-        double lat2 = user.latitude;
-
-        double dLon = Math.toRadians(lon2 - lon1);
-
-        LatLng latLng = new LatLng((lat1 + lat2)/2, (lon1 + lon2)/2); // midpoint found
-
-        int Radius = 6371;// radius of earth in Km
-        double dLat = Math.toRadians(lat2 - lat1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(lat1))
-                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
-                * Math.sin(dLon / 2);
-        double c = 2 * Math.asin(Math.sqrt(a));
-        double valueResult = Radius * c;
-        double km = valueResult / 1;
-        DecimalFormat newFormat = new DecimalFormat("####");
-        double meter = valueResult % 1000;
-        double zoom = 20000/valueResult;
-        zoom = Math.log(zoom)/Math.log(2);
-        float floatzoom = (float)zoom;
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,floatzoom));
-    }
+    public void setMarker(LatLng latLng){
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title("Your Bike");
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        TempMarker = mGoogleMap.addMarker(markerOptions);
+        }
 
     @Override
     public void onResume() {
-        mRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                UserMode = dataSnapshot.child("UserMode").getValue(String.class);
-                Log.d(TAG, UserMode);
-
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
         super.onResume();
+        Log.d(TAG, "onresumecalled");
         setUpMapIfNeeded();
         helper = new NotificationHelper(getActivity());
+        try{
+            if(UserMode.equals("DAY/NIGHT")){
+        map_theme = true;
+        }
+        }catch(Exception e){
+            Log.d(TAG, "Usermode not formed yet");
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         if (getActivity().isFinishing()) {
+            Log.d(TAG, "isfinishing");
             BusProvider.getInstance().unregister(this);
         }
     }
@@ -180,39 +121,80 @@ public class MapFragment extends SupportMapFragment
         }
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mGoogleMap = googleMap;
+    public void setUserMode(final GoogleMap googleMap) {
         Calendar time = Calendar.getInstance();
         int currentTime = time.get(Calendar.HOUR_OF_DAY);
-        //Log.d(TAG, UserMode);
-            if (currentTime >= 18) {
-                try {
-                    // Customise the styling of the base map using a JSON object defined
-                    // in a raw resource file.
-                    boolean success = googleMap.setMapStyle(
-                            MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.night_view));
+        if((currentTime < 18)&& (currentTime > 4)) {
+            try {
+                // Customise the styling of the base map using a JSON object defined
+                // in a raw resource file.
+                boolean success = googleMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.day));
 
-                    if (!success) {
-                        Log.e(TAG, "Style parsing failed.");
-                    }
-                } catch (Resources.NotFoundException e) {
-                    Log.e(TAG, "Can't find style. Error: ", e);
+                if (!success) {
+                    Log.e(TAG, "Style parsing failed.");
                 }
-            } else {
-                try {
-                    // Customise the styling of the base map using a JSON object defined
-                    // in a raw resource file.
-                    boolean success = googleMap.setMapStyle(
-                            MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.day));
-
-                    if (!success) {
-                        Log.e(TAG, "Style parsing failed.");
-                    }
-                } catch (Resources.NotFoundException e) {
-                    Log.e(TAG, "Can't find style. Error: ", e);
-                }
+            } catch (Resources.NotFoundException e) {
+                Log.e(TAG, "Can't find style. Error: ", e);
             }
+        }
+        else {
+            try {
+                // Customise the styling of the base map using a JSON object defined
+                // in a raw resource file.
+                boolean success = googleMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.night_view));
+
+                if (!success) {
+                    Log.e(TAG, "Style parsing failed.");
+                }
+            } catch (Resources.NotFoundException e) {
+                Log.e(TAG, "Can't find style. Error: ", e);
+            }
+        }
+    }
+
+    @Override
+    public void onMapReady(final GoogleMap googleMap) {
+        mGoogleMap = googleMap;
+        Firebase.setAndroidContext(getActivity());
+            mRef = new Firebase("https://trackingapp-194914.firebaseio.com/");
+            state = "Disarmed";
+            final String TAG2 = "COORDINATES";
+            mRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "ONCREATECALLED");
+                    lastCoordinates = dataSnapshot.child("Coordinates").getValue(String.class);
+                    Log.i(TAG2, lastCoordinates);
+                    String[] parts = lastCoordinates.split(" ");
+                    Double Latitude = (Double.parseDouble(parts[0])) / 1000000;
+                    Double Longitude = (Double.parseDouble(parts[1])) / 1000000;
+                    LatLng latLng = new LatLng(Latitude, Longitude);
+                    bike = latLng;
+                    Firebase mRefChild = mRef.child("Coordinates");
+                    mRefChild.setValue(parts[0] + " " + parts[1]);
+                    setMarker(bike);
+                    UserMode = dataSnapshot.child("UserMode").getValue(String.class);
+                    Log.d(TAG, UserMode);
+                    setUserMode(googleMap);
+                   /* if(UserMode.equals("DAY/NIGHT")){
+                         map_theme = true;
+                    }
+                    else{
+                        map_theme = false;
+                    }
+
+                    if(map_theme){
+                        setUserMode(googleMap);
+                    }*/
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+            });
 
 
             //Initialize Google Play Services
@@ -234,6 +216,10 @@ public class MapFragment extends SupportMapFragment
                 buildGoogleApiClient();
                 mGoogleMap.setMyLocationEnabled(true);
             }
+
+          /*  if(firstTime){
+                centreMap();
+            }*/
         }
 
 
@@ -254,6 +240,7 @@ public class MapFragment extends SupportMapFragment
         }
         if(BikeMarker != null) {
             BikeMarker.remove();
+            TempMarker.remove();
         }
         Log.d(TAG, "text in map");
         String bikeloc = event.bikecoordinates;
@@ -327,15 +314,6 @@ public class MapFragment extends SupportMapFragment
         mGoogleApiClient.connect();
     }
 
-   /*Handler handler = new Handler();
-    int delay = 1000; //milliseconds
-
-handler.postDelayed(new Runnable(){
-        public void run(){
-            //do something
-            handler.postDelayed(this, delay);
-        }
-    }, delay);*/
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -362,27 +340,25 @@ handler.postDelayed(new Runnable(){
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
-        // ADD GEOCODER AND TRY-CATCH
-        //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         user = latLng;
-        //MarkerOptions markerOptions = new MarkerOptions();
-        //markerOptions.position(latLng);
-        //markerOptions.title("Current Position");
-        //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        //mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
-        //move map camera
-        if(firstTime){
+        if(firstTime) {
+            try {
+                centreMap();
+                firstTime = false;
+            } catch (Exception e) {
+                Log.d(TAG, "Unable to centre map");
+            }
+        }
+       if(firstTime){
             firstTime = false;
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,16));
         }
-
-       // String TAG2 = "Compare";
-      //  Log.i(TAG2, state);
             if((bike != null) && (user != null) && (state.equals("Disarmed"))){
             distance_check();
         }
     }
+
 
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -419,6 +395,32 @@ handler.postDelayed(new Runnable(){
                         MY_PERMISSIONS_REQUEST_LOCATION );
             }
         }
+    }
+    public void centreMap() {
+        double lon1 = bike.longitude;
+        double lat1 = bike.latitude;
+        double lon2 = user.longitude;
+        double lat2 = user.latitude;
+
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        LatLng latLng = new LatLng((lat1 + lat2)/2, (lon1 + lon2)/2); // midpoint found
+
+        int Radius = 6371;// radius of earth in Km
+        double dLat = Math.toRadians(lat2 - lat1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult = Radius * c;
+        double km = valueResult / 1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        double meter = valueResult % 1000;
+        double zoom = 20000/valueResult;
+        zoom = Math.log(zoom)/Math.log(2);
+        float floatzoom = (float)zoom;
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,floatzoom));
     }
 
     public static final int REQUEST_SEND_SMS = 23;

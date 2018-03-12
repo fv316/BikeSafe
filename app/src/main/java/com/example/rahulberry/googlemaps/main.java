@@ -78,12 +78,12 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         transaction.add(R.id.mapframe, mapFragment);
         transaction.commit();
 
-        final FloatingActionButton facebook = (FloatingActionButton) findViewById(R.id.facebook);
-        facebook.setOnClickListener(new View.OnClickListener() {
+        final FloatingActionButton panic = (FloatingActionButton) findViewById(R.id.panic);
+        panic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent facebookIntent = openFacebook(main.this);
-                startActivity(facebookIntent);            }
+                sendSMS("+447713606066", "PANIC");
+            }
         });
 
         final FloatingActionButton stolenbikes = (FloatingActionButton) findViewById(R.id.stolen_bikes);
@@ -96,21 +96,15 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
             }
         });
 
-        final FloatingActionButton strava = (FloatingActionButton) findViewById(R.id.strava);
-        strava.setOnClickListener(new View.OnClickListener() {
+        final FloatingActionButton police = (FloatingActionButton) findViewById(R.id.police);
+        police.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent stravaIntent = openStrava(main.this);
-                startActivity(stravaIntent);            }
+                Intent policeIntent = openPolice(main.this);
+                startActivity(policeIntent);            }
         });
 
-        final FloatingActionButton twitter = (FloatingActionButton) findViewById(R.id.twitter);
-        twitter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent twitterIntent = openTwitter(main.this);
-                startActivity(twitterIntent);            }
-        });
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -162,8 +156,8 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         try {
             SmsManager smsManager = SmsManager.getDefault();
             smsManager.sendTextMessage(phoneNo, null, msg, null, null);
-            Toast.makeText(getApplicationContext(), "Message Sent",
-                    Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "Message Sent",
+                 //   Toast.LENGTH_LONG).show();
         } catch (Exception ex) {
             Toast.makeText(getApplicationContext(),ex.getMessage().toString(),
                     Toast.LENGTH_LONG).show();
@@ -236,6 +230,11 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
                     Uri.parse("https://www.strava.com/mobile"));
         }
     }
+
+    public static Intent openPolice(Context context) {
+            return new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://www.met.police.uk/contact-us/find-a-police-station/"));
+        }
 
     public static Intent openTwitter(Context context) {
         try {

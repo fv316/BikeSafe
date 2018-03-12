@@ -38,8 +38,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
        android:layout_gravity="bottom|end"
-        fab:fab_addButtonColorNormal="@color/pink"
-        fab:fab_addButtonColorPressed="@color/pink_pressed"
+        fab:fab_addButtonColorNormal="@color/light_blue"
+        fab:fab_addButtonColorPressed="@color/light_blue_pressed"
         fab:fab_addButtonPlusIconColor="@color/white"
         fab:fab_labelStyle="@style/menu_labels_style"
         android:layout_marginBottom="16dp"
@@ -54,30 +54,22 @@
             fab:fab_title="Stolen Bikes UK"
             fab:fab_colorPressed="@color/white_pressed"/>
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/twitter"
+            android:id="@+id/police"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/light_blue"
-            fab:fab_icon="@drawable/ic_twitter"
-            fab:fab_title="Twitter"
-            fab:fab_colorPressed="@color/light_blue_pressed"/>
+            fab:fab_icon="@drawable/ic_police"
+            fab:fab_colorNormal="@color/white"
+            fab:fab_colorPressed="@color/white_pressed"
+            fab:fab_title="Police"
+            android:layout_marginBottom="16dp" />
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/strava"
+            android:id="@+id/panic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_icon="@drawable/ic_s_two"
-            fab:fab_colorNormal="@color/orange"
-            fab:fab_colorPressed="@color/orange_pressed"
-            fab:fab_title="Strava"
-            android:layout_marginBottom="16dp"/>
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/facebook"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/dark_blue"
-            fab:fab_icon="@drawable/ic_facebook"
-            fab:fab_title="Facebook"
-            fab:fab_colorPressed="@color/dark_blue_pressed"/>
+            fab:fab_colorNormal="#df3333"
+            fab:fab_icon="@drawable/ic_panic"
+            fab:fab_title="Panic!"
+            fab:fab_colorPressed="#bf1f1f"/>
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </android.support.design.widget.CoordinatorLayout>

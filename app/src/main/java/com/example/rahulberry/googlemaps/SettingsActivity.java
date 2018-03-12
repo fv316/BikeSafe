@@ -144,8 +144,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
         Firebase mRef;
+//        Context context = getActivity().getApplicationContext();
         public static final String VIEW = "MapView";
         private SwitchPreference pref;
+        public boolean test;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -157,22 +160,21 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
             pref = (SwitchPreference)findPreference("map_view_switch");
             pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference,
                                                   Object newValue) {
-                   String TAG = "SWITCH";
                     if(pref.isChecked()){
                         Firebase mRefChild = mRef.child("UserMode");
-                        mRefChild.setValue("DAY/NIGHT");
+                        mRefChild.setValue("NORMAL");
+                        //  prefs.getBoolean("DAY//NIGHT", true);
+                        //  SharedPreferences.Editor.
                         pref.setDefaultValue(true);
                     }
                     else{
                         Firebase mRefChild = mRef.child("UserMode");
-                        mRefChild.setValue("NORMAL");
+                        mRefChild.setValue("DAY/NIGHT");
                         pref.setDefaultValue(false);
                     }
                     return true;
