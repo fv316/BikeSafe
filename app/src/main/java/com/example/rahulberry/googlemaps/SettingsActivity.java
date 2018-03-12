@@ -147,20 +147,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
-<<<<<<< HEAD
-        Firebase mRef;
-//        Context context = getActivity().getApplicationContext();
-=======
-        Context context = getActivity().getApplicationContext();
->>>>>>> 320a19533dc2c0d737138338316206485a0886cb
         public static final String VIEW = "MapView";
-        public boolean test;
         private SwitchPreference pref;
-<<<<<<< HEAD
-        public boolean test;
-=======
         Firebase mRef;
->>>>>>> 320a19533dc2c0d737138338316206485a0886cb
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -173,7 +162,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             pref = (SwitchPreference)findPreference("map_view_switch");
-           // SharedPreferences.Editor prefs = context.getSharedPreferences(VIEW, MODE_PRIVATE).edit();
             pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference,
@@ -181,26 +169,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     if(pref.isChecked()){
                         Firebase mRefChild = mRef.child("UserMode");
                         mRefChild.setValue("NORMAL");
-                        //  prefs.getBoolean("DAY//NIGHT", true);
-                        //  SharedPreferences.Editor.
                         pref.setDefaultValue(true);
                     }
                     else{
                         Firebase mRefChild = mRef.child("UserMode");
                         mRefChild.setValue("DAY/NIGHT");
                         pref.setDefaultValue(false);
-                      //  prefs.getBoolean("DAY//NIGHT", true);
-                      //  SharedPreferences.Editor.
                     }
-
-                  /*  boolean switched = ((SwitchPreference) preference).isChecked();
-                    mapSetting.putBoolean()
-                    update = !switched;
-                    mEditor = mUpdate.edit();
-                    mEditor.putBoolean("update", update);
-                    mEditor.commit();
-                    autoUpdate.setSummary(update == false ? "Disabled" : "Enabled");
-*/
                     return true;
                 }
 
