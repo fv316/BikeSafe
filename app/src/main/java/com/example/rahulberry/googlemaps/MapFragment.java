@@ -56,8 +56,12 @@ public class MapFragment extends SupportMapFragment
     public boolean firstTime = true;
     public boolean firstSMS = true;
     public boolean firstNotification = true;
+<<<<<<< HEAD
     public boolean map_theme;
 
+=======
+    public String UserMode;
+>>>>>>> 320a19533dc2c0d737138338316206485a0886cb
     NotificationHelper helper;
 
     GoogleMap mGoogleMap;
@@ -69,11 +73,12 @@ public class MapFragment extends SupportMapFragment
     Marker BikeMarker;
     Marker TempMarker;
     public Firebase mRef;
+    public Firebase mRef1;
     public String lastCoordinates;
-    public String UserMode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+<<<<<<< HEAD
         super.onCreate(savedInstanceState);
         BusProvider.getInstance().register(this);
 
@@ -91,6 +96,61 @@ public class MapFragment extends SupportMapFragment
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onresumecalled");
+=======
+        Firebase.setAndroidContext(getActivity());
+        mRef = new Firebase("https://trackingapp-194914.firebaseio.com/");
+        super.onCreate(savedInstanceState);
+        state = "Disarmed";
+       final String TAG2 = "COORDINATES";
+        BusProvider.getInstance().register(this);
+        mRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                lastCoordinates = dataSnapshot.child("Coordinates").getValue(String.class);
+                Log.i(TAG2, lastCoordinates);
+                String[] parts = lastCoordinates.split(" ");
+                Double Latitude = (Double.parseDouble(parts[0]))/1000000;
+                Double Longitude = (Double.parseDouble(parts[1]))/1000000;
+                LatLng latLng = new LatLng(Latitude, Longitude);
+                bike = latLng;
+                try{
+                    centreMap();
+                }catch(Exception e){
+                    Log.d(TAG, "Unable to centre Map");
+                }
+                Firebase mRefChild = mRef.child("Coordinates");
+                mRefChild.setValue(parts[0]+" "+parts[1]);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                markerOptions.title("Your Bike");
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                TempMarker = mGoogleMap.addMarker(markerOptions);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        mRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserMode = dataSnapshot.child("UserMode").getValue(String.class);
+                Log.d(TAG, UserMode);
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+>>>>>>> 320a19533dc2c0d737138338316206485a0886cb
         setUpMapIfNeeded();
         helper = new NotificationHelper(getActivity());
         try{
@@ -121,15 +181,28 @@ public class MapFragment extends SupportMapFragment
         }
     }
 
+<<<<<<< HEAD
     public void setUserMode(final GoogleMap googleMap) {
         Calendar time = Calendar.getInstance();
         int currentTime = time.get(Calendar.HOUR_OF_DAY);
         if((currentTime < 18)&& (currentTime > 4)) {
+=======
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mGoogleMap = googleMap;
+      Calendar time = Calendar.getInstance();
+            int currentTime = time.get(Calendar.HOUR_OF_DAY);
+        if (currentTime >= 18) {
+>>>>>>> 320a19533dc2c0d737138338316206485a0886cb
             try {
                 // Customise the styling of the base map using a JSON object defined
                 // in a raw resource file.
                 boolean success = googleMap.setMapStyle(
+<<<<<<< HEAD
                         MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.day));
+=======
+                        MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.night_view));
+>>>>>>> 320a19533dc2c0d737138338316206485a0886cb
 
                 if (!success) {
                     Log.e(TAG, "Style parsing failed.");
@@ -137,13 +210,21 @@ public class MapFragment extends SupportMapFragment
             } catch (Resources.NotFoundException e) {
                 Log.e(TAG, "Can't find style. Error: ", e);
             }
+<<<<<<< HEAD
         }
         else {
+=======
+        } else {
+>>>>>>> 320a19533dc2c0d737138338316206485a0886cb
             try {
                 // Customise the styling of the base map using a JSON object defined
                 // in a raw resource file.
                 boolean success = googleMap.setMapStyle(
+<<<<<<< HEAD
                         MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.night_view));
+=======
+                        MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.day));
+>>>>>>> 320a19533dc2c0d737138338316206485a0886cb
 
                 if (!success) {
                     Log.e(TAG, "Style parsing failed.");
@@ -152,6 +233,7 @@ public class MapFragment extends SupportMapFragment
                 Log.e(TAG, "Can't find style. Error: ", e);
             }
         }
+<<<<<<< HEAD
     }
 
     @Override
@@ -197,11 +279,13 @@ public class MapFragment extends SupportMapFragment
             });
 
 
+=======
+>>>>>>> 320a19533dc2c0d737138338316206485a0886cb
             //Initialize Google Play Services
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if ((ContextCompat.checkSelfPermission(getActivity(),
                         Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(getActivity(),
+                        == PackageManager.PERMISSION_GRANTED)&&(ContextCompat.checkSelfPermission(getActivity(),
                         Manifest.permission.SEND_SMS)
                         == PackageManager.PERMISSION_GRANTED)) {
                     //Location Permission already granted
@@ -221,7 +305,6 @@ public class MapFragment extends SupportMapFragment
                 centreMap();
             }*/
         }
-
 
     String TAG1 = "bus with mode";
     @Subscribe
@@ -260,7 +343,7 @@ public class MapFragment extends SupportMapFragment
         BikeMarker = mGoogleMap.addMarker(markerOptions);
           ///  TempMarker = BikeMarker;
            // BikeMarker = TempMarker;
-
+        
         if ((bike != null) && (user != null) && (state.equals("Disarmed"))) {
             Log.d(TAG1, state);
                 distance_check();
@@ -326,6 +409,33 @@ public class MapFragment extends SupportMapFragment
                 == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
+    }
+
+    public void centreMap() {
+        double lon1 = bike.longitude;
+        double lat1 = bike.latitude;
+        double lon2 = user.longitude;
+        double lat2 = user.latitude;
+
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        LatLng latLng = new LatLng((lat1 + lat2)/2, (lon1 + lon2)/2); // midpoint found
+
+        int Radius = 6371;// radius of earth in Km
+        double dLat = Math.toRadians(lat2 - lat1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult = Radius * c;
+        double km = valueResult / 1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        double meter = valueResult % 1000;
+        double zoom = 20000/valueResult;
+        zoom = Math.log(zoom)/Math.log(2);
+        float floatzoom = (float)zoom;
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,floatzoom));
     }
 
     @Override
