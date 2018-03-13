@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 /**
  * Created by rahulberry on 17/02/2018.
@@ -29,6 +30,7 @@ public class welcome_two extends AppCompatActivity{
                 .asGif()
                 .placeholder(R.drawable.gif_three)
                 .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imageview);
         nexttwo = (Button)findViewById(R.id.next_two);
 

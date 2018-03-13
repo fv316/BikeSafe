@@ -157,6 +157,7 @@ public class MapFragment extends SupportMapFragment
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        setUserMode(googleMap);
         Firebase.setAndroidContext(getActivity());
             mRef = new Firebase("https://trackingapp-194914.firebaseio.com/");
             state = "Disarmed";
@@ -164,7 +165,6 @@ public class MapFragment extends SupportMapFragment
             mRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Log.d(TAG, "ONCREATECALLED");
                     lastCoordinates = dataSnapshot.child("Coordinates").getValue(String.class);
                     Log.i(TAG2, lastCoordinates);
                     String[] parts = lastCoordinates.split(" ");
@@ -177,7 +177,6 @@ public class MapFragment extends SupportMapFragment
                     setMarker(bike);
                     UserMode = dataSnapshot.child("UserMode").getValue(String.class);
                     Log.d(TAG, UserMode);
-                    setUserMode(googleMap);
                    /* if(UserMode.equals("DAY/NIGHT")){
                          map_theme = true;
                     }

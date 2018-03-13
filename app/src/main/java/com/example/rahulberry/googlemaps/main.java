@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
@@ -82,7 +83,18 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
         panic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendSMS("+447713606066", "PANIC");
+                for(int i=0; i<5; i++) {
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            sendSMS("+447936472249", "panic");//ARDUINO
+                            //   sendSMS("+447713606066", "Secure"); //Rahul
+                            // sendSMS("+447541241808", "Secure"); //Niall
+                            // sendSMS("+447936663084", "Secure"); //Lydia
+                        }
+                    }, 10000);
+                }
             }
         });
 
@@ -135,16 +147,35 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
                 if (user_mode.isChecked()) {
                      state = "Secure";
                      edit.setTitle(state);
-                     sendSMS("+447713606066", "Secure"); //Rahul
-                    // sendSMS("+447541241808", "Cecure"); //Niall
-                   // sendSMS("+447936663084", "Secure"); //Lydia
+                     for(int i=0; i<5; i++) {
+                         final Handler handler = new Handler();
+                         handler.postDelayed(new Runnable() {
+                             @Override
+                             public void run() {
+                                 sendSMS("+447936472249", "secure");//Arduino
+                              //   sendSMS("+447713606066", "Secure"); //Rahul
+                                 // sendSMS("+447541241808", "Secure"); //Niall
+                                 // sendSMS("+447936663084", "Secure"); //Lydia
+                             }
+                         }, 10000);
+                     }
+
                      BusProvider.getInstance().post(new mode(state));
                 } else {
                     state = "Disarmed";
                     edit.setTitle(state);
-                    sendSMS("+447713606066", "Disarmed"); //Rahul
-                    //sendSMS("+447541241808", "Disarmed"); //Niall
-                  //  sendSMS("+447936663084", "Disarmed"); //Lydia
+                    for(int i=0; i<5; i++) {
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                sendSMS("+447936472249", "normal");//Arduino
+                               // sendSMS("+447713606066", "secure"); //Rahul
+                                // sendSMS("+447541241808", "secure"); //Niall
+                                // sendSMS("+447936663084", "secure"); //Lydia
+                            }
+                        }, 10000);
+                    }
                     BusProvider.getInstance().post(new mode(state));
                 }
             }
@@ -377,7 +408,7 @@ public class main extends AppCompatActivity implements NavigationView.OnNavigati
             tw.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                 shareTwitter("BIKESAFE IS THE BEST WOOO LIT LITLIT");
+                 shareTwitter("Hey guys, check out BikeSafe, the most reliable invisible bike tracker! @BikeSafeTeam");
                 }
             });
 

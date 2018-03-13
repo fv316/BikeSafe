@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 public class welcome_one extends AppCompatActivity{
 
@@ -25,6 +26,7 @@ public class welcome_one extends AppCompatActivity{
                 .asGif()
                 .placeholder(R.drawable.bikerdribbble)
                 .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imageview);
 
         next = (Button)findViewById(R.id.next_one);
