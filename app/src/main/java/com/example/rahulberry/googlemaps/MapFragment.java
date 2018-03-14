@@ -53,10 +53,13 @@ public class MapFragment extends SupportMapFragment
     public LatLng bike;
     public LatLng user;
     public String state;
+    public LatLng bikesecure;
     public boolean firstTime = true;
     public boolean firstSMS = true;
     public boolean firstNotification = true;
+    public boolean firstNotificationSecure = true;
     public boolean map_theme;
+    public boolean firstsecure = true;
 
     public String UserMode;
     NotificationHelper helper;
@@ -247,6 +250,10 @@ public class MapFragment extends SupportMapFragment
         Double Longitude = (Double.parseDouble(parts[1]))/1000000;
         LatLng latLng = new LatLng(Latitude, Longitude);
         bike = latLng;
+        if(firstsecure){
+            bikesecure = bike;
+            firstsecure = false;
+        }
         Firebase mRefChild = mRef.child("Coordinates");
         mRefChild.setValue(parts[0]+" "+parts[1]);
         //need to think of an if statement that properly deletes the old marker: this didn't work;
@@ -259,9 +266,14 @@ public class MapFragment extends SupportMapFragment
            // BikeMarker = TempMarker;
         
         if ((bike != null) && (user != null) && (state.equals("Disarmed"))) {
-            Log.d(TAG1, state);
+            Log.d((TAG1), state);
                 distance_check();
             }
+
+        if((bike != null)&&(user!=null)&&(state.equals("Secure"))){
+            Log.d((TAG1), state);
+            distance_check_secure();
+        }
     }
 
     public void distance_check(){
@@ -289,15 +301,45 @@ public class MapFragment extends SupportMapFragment
         }
         if((meters > 10) && (firstNotification)){
             firstNotification = false;
-            sendLockReminder();
+            sendLockReminder("20% battery remaining in your device!");
+        }
+    }
+
+
+    public void distance_check_secure(){
+        int Radius = 6371;// radius of earth in Km
+        double lat1 = bikesecure.latitude;
+        Log.d(TAG, String.valueOf(lat1));
+        double lat2 = bike.latitude;
+        double lon1 = bikesecure.longitude;
+        double lon2 = bike.longitude;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult = Radius * c;
+        double km = valueResult / 1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        double meter = valueResult % 1000;
+
+        double meters = valueResult * 1000;
+
+        if(meters < 10){
+            firstNotificationSecure = true;
+        }
+        if((meters > 10) && (firstNotificationSecure)){
+            firstNotificationSecure = false;
+            sendLockReminder("Your bike has moved! Enter Panic mode!");
         }
     }
 
 
 
-
-    public void sendLockReminder(){
-            NotificationCompat.Builder builder = helper.getnotificationChannelNotification("BikeSafe","Did you forget to lock your bike?");
+    public void sendLockReminder(String message){
+            NotificationCompat.Builder builder = helper.getnotificationChannelNotification("BikeSafe",message);
         helper.getManager().notify(new Random().nextInt(),builder.build());
         return;
     }
