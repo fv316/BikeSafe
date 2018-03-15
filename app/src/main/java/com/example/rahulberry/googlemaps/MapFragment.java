@@ -301,7 +301,7 @@ public class MapFragment extends SupportMapFragment
         }
         if((meters > 10) && (firstNotification)){
             firstNotification = false;
-            sendLockReminder("20% battery remaining in your device!");
+            sendLockReminder("Did you forget to secure your bike?");
         }
     }
 
